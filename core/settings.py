@@ -82,18 +82,17 @@ WSGI_APPLICATION = 'core.wsgi.application'
 
 
 # Database
-# Otomatis mendeteksi apakah berjalan di Vercel atau lokal
-IS_VERCEL = os.environ.get('VERCEL') == '1'
 
-if IS_VERCEL:
-    # Vercel hanya mengizinkan penulisan file di direktori /tmp
-    TMP_DB_PATH = Path('/tmp/db.sqlite3')
-    SOURCE_DB_PATH = BASE_DIR / 'db.sqlite3'
+
+SOURCE_DB_PATH = BASE_DIR / 'db.sqlite3'
+TMP_DB_PATH = Path('/tmp/db.sqlite3')
+
+if not os.access(BASE_DIR, os.W_OK):
     if not TMP_DB_PATH.exists() and SOURCE_DB_PATH.exists():
         shutil.copy2(SOURCE_DB_PATH, TMP_DB_PATH)
     DB_NAME = TMP_DB_PATH
 else:
-    DB_NAME = BASE_DIR / 'db.sqlite3'
+    DB_NAME = SOURCE_DB_PATH
 
 DATABASES = {
     'default': {
@@ -101,7 +100,6 @@ DATABASES = {
         'NAME': DB_NAME,
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
