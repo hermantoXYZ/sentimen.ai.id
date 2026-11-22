@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sentimen.ai.id - Portal Analisis Sentimen</title>
+  <style>
+    body {
+      font-family: Verdana, Arial, sans-serif;
+      font-size: 12px;
+      background-color: #e5e9f0;
+      color: #111;
+      margin: 0;
+      padding: 8px;
+    }
+    .wap-container {
+      max-width: 440px;
+      margin: 0 auto;
+      background: #ffffff;
+      border: 1px solid #7a96b8;
+    }
+    .wap-header {
+      background: #003366;
+      color: #ffffff;
+      padding: 6px 8px;
+      font-weight: bold;
+      border-bottom: 3px solid #ff6600;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .wap-header span { color: #ffcc00; }
+    .wap-userbar {
+      background: #f0f4f8;
+      border-bottom: 1px solid #b8c9de;
+      padding: 4px 8px;
+      font-size: 11px;
+      display: flex;
+      justify-content: space-between;
+    }
+    .wap-userbar a { color: #cc0000; text-decoration: none; font-weight: bold; }
+    .wap-title {
+      background: #d9e4f2;
+      color: #003366;
+      font-weight: bold;
+      padding: 4px 8px;
+      border-top: 1px solid #9bb4d4;
+      border-bottom: 1px solid #9bb4d4;
+    }
+    .wap-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    .wap-list li {
+      border-bottom: 1px dotted #b8c9de;
+      padding: 6px 8px;
+    }
+    .wap-list li:hover { background: #f7faff; }
+    .wap-list a {
+      color: #003399;
+      text-decoration: none;
+      font-weight: bold;
+      display: block;
+    }
+    .wap-list small { color: #555; display: block; font-size: 10px; margin-top: 2px; }
+    .wap-page { display: none; padding: 8px; }
+    .wap-page.active { display: block; }
+    .breadcrumb {
+      background: #f4f7fa;
+      padding: 4px 6px;
+      border: 1px solid #d0dceb;
+      margin-bottom: 8px;
+      font-size: 11px;
+    }
+    .breadcrumb a { color: #003399; text-decoration: none; font-weight: bold; }
+    textarea {
+      width: 97%;
+      height: 90px;
+      border: 1px solid #7a96b8;
+      padding: 4px;
+      font-family: Verdana, Arial, sans-serif;
+      font-size: 12px;
+      margin-bottom: 6px;
+    }
+    .btn-wap {
+      background: #ff6600;
+      color: #ffffff;
+      border: 1px solid #cc5200;
+      padding: 5px 10px;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .btn-wap:disabled { background: #999; border-color: #777; }
+    .result-box {
+      margin-top: 10px;
+      border: 1px solid #7a96b8;
+      background: #f9fbfd;
+      padding: 6px;
+      display: none;
+    }
+    table.wap-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 4px;
+      font-size: 11px;
+    }
+    table.wap-table td, table.wap-table th {
+      border: 1px solid #b8c9de;
+      padding: 4px;
+      text-align: left;
+    }
+    table.wap-table th { background: #e3ecf7; color: #003366; }
+    .badge-pos { color: #006600; font-weight: bold; }
+    .badge-neg { color: #cc0000; font-weight: bold; }
+    .badge-net { color: #666600; font-weight: bold; }
+    .bar-bg { background: #dde4ed; height: 10px; width: 100%; margin: 2px 0; }
+    .bar-fill { height: 10px; background: #0055aa; }
+    .wap-footer {
+      background: #f0f4f8;
+      border-top: 1px solid #b8c9de;
+      padding: 6px 8px;
+      text-align: center;
+      font-size: 10px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="wap-container">
+    <div class="wap-header">
+      <div>Sentimen<span>.ai.id</span></div>
+      <div style="font-size:10px; font-weight:normal;">WAP Lite v1.0</div>
+    </div>
+
+    <div class="wap-userbar">
+      <div>User: <b>{{ request.user.username }}</b> | Sisa Kuota: <b id="quota-display">{{ quota.remaining }}/{{ quota.daily_limit }}</b></div>
+      <div><a href="{% url 'logout' %}">[Keluar]</a></div>
+    </div>
+
+    <!-- HALAMAN 1: HOMEPAGE LIST DIREKTORI -->
+    <div id="page-home" class="wap-page active" style="padding:0;">
+      <div class="wap-title">[+] Pilih Kategori Analisis</div>
+      <ul class="wap-list">
+        <li>
+          <a href="#umum" onclick="openCategory('Umum', 'Cek Teks Umum & Chat', 'Analisis sentimen teks bahasa Indonesia secara umum.'); return false;">
+            &raquo; Cek Teks Umum &amp; Chat
+          </a>
+          <small>Deteksi opini, emosi, dan nada kalimat sehari-hari</small>
+        </li>
+        <li>
+          <a href="#market" onclick="openCategory('Market & Saham', 'Sentimen Market, Saham & Kripto', 'Analisis berita ekonomi, emiten BEI/IHSG, dan sentimen investor (Bullish/Bearish).'); return false;">
+            &raquo; Sentimen Market, Saham &amp; Kripto
+          </a>
+          <small>Deteksi sentimen Bullish, Bearish, atau Netral pada berita pasar</small>
+        </li>
+        <li>
+          <a href="#umkm" onclick="openCategory('UMKM & Toko', 'Ulasan UMKM & Toko Online', 'Analisis review pembeli terkait rasa, kualitas produk, harga, dan pelayanan.'); return false;">
+            &raquo; Ulasan UMKM &amp; Toko Online
+          </a>
+          <small>Evaluasi kepuasan pelanggan &amp; keluhan layanan</small>
+        </li>
+        <li>
+          <a href="#medsos" onclick="openCategory('Medsos & Viral', 'Komentar Medsos & Berita Viral', 'Analisis komentar netizen lengkap dengan bahasa gaul/slang Indonesia.'); return false;">
+            &raquo; Komentar Medsos &amp; Berita Viral
+          </a>
+          <small>Paham bahasa gaul, sarkasme, dan opini publik</small>
+        </li>
+        <li>
+          <a href="#batch" onclick="openCategory('Batch List Data', 'List Data Sentimen (Banyak Baris)', 'Analisis banyak baris teks sekaligus (1 kalimat per baris).'); return false;">
+            &raquo; List Data Sentimen (Batch / Banyak Baris)
+          </a>
+          <small>Input banyak data sekaligus dipisahkan baris baru (Enter)</small>
+        </li>
+      </ul>
+      {% if request.user.is_staff %}
+      <div class="wap-title">[+] Menu Admin</div>
+      <ul class="wap-list">
+        <li><a href="/admin/">&raquo; Kelola User &amp; Kuota Harian</a></li>
+      </ul>
+      {% endif %}
+    </div>
+
+    <!-- HALAMAN 2: HALAMAN ANALISIS KATEGORI -->
+    <div id="page-analyze" class="wap-page">
+      <div class="breadcrumb">
+        <a href="#home" onclick="goHome(); return false;">&laquo; Kembali ke Menu Utama</a>
+      </div>
+      <div class="wap-title" id="cat-title">[+] Analisis</div>
+      <p id="cat-desc" style="margin:6px 0; color:#444; font-size:11px;"></p>
+
+      <textarea id="input-text" placeholder="Ketik atau tempel teks di sini..."></textarea>
+      <div>
+        <button id="btn-submit" class="btn-wap" onclick="runAnalysis()">Analisa Sekarang &raquo;</button>
+        <button class="btn-wap" style="background:#666; border-color:#444;" onclick="fillSample()">Contoh Teks</button>
+      </div>
+
+      <div id="status-msg" style="margin-top:6px; color:#003366; font-weight:bold;"></div>
+
+      <div id="result-box" class="result-box">
+        <div class="wap-title" style="margin-bottom:6px;">Hasil Analisis AI</div>
+        <div id="result-content"></div>
+      </div>
+    </div>
+
+    <div class="wap-footer">
+      Sentimen.ai.id &bull; Powered by Gemini AI<br>
+      &copy; 2026 Classic WAP Interface
+    </div>
+  </div>
+
+  <script>
+    const csrfToken = "{{ csrf_token }}";
+    let currentCategory = "Umum";
+
+    const samples = {
+      "Umum": "Pelayanan hari ini sangat memuaskan, prosesnya cepat dan petugasnya ramah sekali.",
+      "Market & Saham": "Laba bersih BBRI tumbuh solid di kuartal ini didukung ekspansi kredit mikro dan efisiensi biaya dana.",
+      "UMKM & Toko": "Kopi susunya enak banget, gula arennya pas, cuma pengirimannya agak lama karena hujan.",
+      "Medsos & Viral": "Gokil sih kebijakan barunya, tapi kalau pengawasannya masih kendor ya sama aja bohong.",
+      "Batch List Data": "Harga saham BBCA menguat setelah rilis laporan keuangan.\nPengiriman barang lambat dan kemasan penyok.\nRapat berjalan sesuai jadwal tanpa perubahan."
+    };
+
+    function openCategory(cat, title, desc) {
+      currentCategory = cat;
+      document.getElementById('cat-title').innerText = '[+] ' + title;
+      document.getElementById('cat-desc').innerText = desc;
+      document.getElementById('input-text').value = '';
+      document.getElementById('result-box').style.display = 'none';
+      document.getElementById('status-msg').innerText = '';
+      document.getElementById('page-home').classList.remove('active');
+      document.getElementById('page-analyze').classList.add('active');
+    }
+
+    function goHome() {
+      document.getElementById('page-analyze').classList.remove('active');
+      document.getElementById('page-home').classList.add('active');
+    }
+
+    function fillSample() {
+      document.getElementById('input-text').value = samples[currentCategory] || samples["Umum"];
+    }
+
+    async function runAnalysis() {
+      const text = document.getElementById('input-text').value.trim();
+      if (!text) {
+        alert('Silakan masukkan teks terlebih dahulu!');
+        return;
+      }
+
+      const btn = document.getElementById('btn-submit');
+      const status = document.getElementById('status-msg');
+      const resBox = document.getElementById('result-box');
+      const resContent = document.getElementById('result-content');
+
+      btn.disabled = true;
+      status.innerText = 'Memproses data...';
+      resBox.style.display = 'none';
+
+      const isBatch = currentCategory === 'Batch List Data';
+      const sysPrompt = isBatch
+        ? `Anda adalah analis sentimen. Analisis setiap baris teks secara terpisah. Kembalikan JSON dengan format: {"summary": {"positif": int, "netral": int, "negatif": int}, "items": [{"text": string, "sentiment": "Positif"|"Netral"|"Negatif", "score": int_0_to_100}]}`
+        : `Anda adalah analis sentimen ahli bidang ${currentCategory}. Analisis teks berikut dan kembalikan JSON dengan format: {"sentiment": "Positif"|"Netral"|"Negatif", "confidence": int_0_to_100, "emotion": string, "keywords": [string], "summary": string}`;
+
+      try {
+        const response = await fetch('/api/analyze/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken
+          },
+          body: JSON.stringify({
+            prompt: text,
+            systemInstruction: sysPrompt,
+            category: currentCategory
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          status.innerText = 'Error: ' + (data.error || 'Terjadi kesalahan');
+          btn.disabled = false;
+          return;
+        }
+
+        if (data.remaining_quota !== undefined) {
+          document.getElementById('quota-display').innerText = `${data.remaining_quota}/${data.daily_limit}`;
+        }
+
+        const rawText = data.candidates[0].content.parts[0].text;
+        const parsed = JSON.parse(rawText);
+
+        if (isBatch && parsed.items) {
+          let rows = parsed.items.map((item, idx) => {
+            const cls = item.sentiment === 'Positif' ? 'badge-pos' : (item.sentiment === 'Negatif' ? 'badge-neg' : 'badge-net');
+            return `<tr><td>${idx+1}</td><td>${item.text}</td><td class="${cls}">${item.sentiment} (${item.score}%)</td></tr>`;
+          }).join('');
+          resContent.innerHTML = `
+            <p><b>Ringkasan:</b> Positif: ${parsed.summary.positif} | Netral: ${parsed.summary.netral} | Negatif: ${parsed.summary.negatif}</p>
+            <table class="wap-table">
+              <tr><th>No</th><th>Teks</th><th>Sentimen</th></tr>
+              ${rows}
+            </table>`;
+        } else {
+          const cls = parsed.sentiment === 'Positif' ? 'badge-pos' : (parsed.sentiment === 'Negatif' ? 'badge-neg' : 'badge-net');
+          resContent.innerHTML = `
+            <table class="wap-table">
+              <tr><th>Kategori</th><td>${currentCategory}</td></tr>
+              <tr><th>Sentimen</th><td class="${cls}">${parsed.sentiment}</td></tr>
+              <tr><th>Keyakinan</th><td>${parsed.confidence}%<div class="bar-bg"><div class="bar-fill" style="width:${parsed.confidence}%"></div></div></td></tr>
+              <tr><th>Emosi</th><td>${parsed.emotion}</td></tr>
+              <tr><th>Kata Kunci</th><td>${(parsed.keywords || []).join(', ')}</td></tr>
+              <tr><th>Ringkasan</th><td>${parsed.summary}</td></tr>
+            </table>`;
+        }
+
+        status.innerText = '';
+        resBox.style.display = 'block';
+      } catch (err) {
+        status.innerText = 'Gagal memproses respons: ' + err.message;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+  </script>
+</body>
+</html>
