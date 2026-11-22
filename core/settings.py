@@ -64,7 +64,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'core.wsgi.application'
 
 # Database dengan pengaman untuk Vercel read-only filesystem
-SOURCE_DB_PATH = BASE_DIR / 'db.sqlite3'
+SOURCE_DB_PATH = BASE_DIR / 'core' / 'db.sqlite3'
 TMP_DB_PATH = Path('/tmp/db.sqlite3')
 
 if not os.access(BASE_DIR, os.W_OK):
