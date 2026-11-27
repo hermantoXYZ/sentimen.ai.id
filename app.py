@@ -1,3 +1,4 @@
+import os
 import io
 from datetime import datetime, timedelta
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, send_file
@@ -15,10 +16,11 @@ from layanan.instagram_service import analyze_instagram_url, analyze_instagram_m
 
 load_dotenv()
 
+_BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app = Flask(
     __name__,
-    template_folder='template',
-    static_folder='statis',
+    template_folder=os.path.join(_BASE_DIR, 'template'),
+    static_folder=os.path.join(_BASE_DIR, 'statis'),
     static_url_path='/statis'
 )
 app.config.from_object(Config)
