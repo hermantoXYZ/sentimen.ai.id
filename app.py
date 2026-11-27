@@ -1,6 +1,5 @@
 import io
 from datetime import datetime, timedelta
-import pandas as pd
 from flask import Flask, render_template, request, redirect, url_for, jsonify, flash, send_file
 from sqlalchemy import func
 from dotenv import load_dotenv
@@ -131,6 +130,7 @@ def upload():
             flash('Harap pilih file CSV yang valid.', 'danger')
             return redirect(request.url)
 
+        import pandas as pd
         df = pd.read_csv(file)
         required = {'platform', 'username', 'text'}
         if not required.issubset(df.columns):

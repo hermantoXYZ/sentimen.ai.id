@@ -4,8 +4,26 @@ import re
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta
 from urllib.parse import parse_qs, urlparse
-import requests
-from googleapiclient.discovery import build
+
+try:
+    import requests
+except ImportError:
+    requests = None
+
+# googleapiclient di-lazy-load agar tidak crash jika tidak terpasang
+_yt_service = None
+
+def _get_youtube_api():
+    global _yt_service
+    if _yt_service is None:
+        api_key = os.getenv('YOUTUBE_API_KEY')
+        if api_key:
+            try:
+                from googleapiclient.discovery import build
+                _yt_service = build('youtube', 'v3', developerKey=api_key)
+            except ImportError:
+                pass
+    return _yt_service
 
 SAMPLE_CHANNELS = {
     '@SomeChannel': 'UCgLUrD-P6fpJfX1g8nmyeUg',
@@ -262,6 +280,7 @@ def analyze_youtube_video_comments(video_input: str, max_comments: int = 30) -> 
     if not api_key:
         return _fetch_public_video_comments(video_id, max_comments=max_comments)
 
+    from googleapiclient.discovery import build
     youtube = build('youtube', 'v3', developerKey=api_key)
     vid_resp = youtube.videos().list(part='snippet,statistics', id=video_id).execute()
     if not vid_resp.get('items'):
@@ -499,6 +518,7 @@ def analyze_youtube_channel(channel_input: str) -> dict:
                 'Pastikan koneksi internet aktif atau isi YOUTUBE_API_KEY di .env.'
             )
 
+    from googleapiclient.discovery import build
     youtube = build('youtube', 'v3', developerKey=api_key)
     if channel_id.startswith('@'):
         ch_resp = youtube.channels().list(part='snippet,statistics', forHandle=channel_id.lstrip('@')).execute()

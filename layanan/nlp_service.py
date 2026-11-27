@@ -1,18 +1,17 @@
 import re
+import os
 from collections import Counter
 import nltk
 from nltk.corpus import stopwords
 from textblob import TextBlob
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.naive_bayes import MultinomialNB
 
-import os
+# sklearn di-lazy-load untuk hemat waktu cold-start di Vercel
+# (import besar: ~150MB)
 
 for res in ['punkt', 'stopwords']:
     try:
         nltk.data.find(f'corpora/{res}' if res == 'stopwords' else f'tokenizers/{res}')
     except LookupError:
-        # Di Vercel, download ke /tmp agar bisa ditulis
         dl_dir = '/tmp/nltk_data' if os.environ.get('VERCEL') == '1' else None
         try:
             nltk.download(res, quiet=True, download_dir=dl_dir)
@@ -179,17 +178,28 @@ _TRAINING_DATA = [
 
 _SAMPLES = [t for t, _ in _TRAINING_DATA]
 _LABELS = [l for _, l in _TRAINING_DATA]
-_vec = TfidfVectorizer(ngram_range=(1, 2), min_df=1)
-_clf = MultinomialNB(alpha=0.5).fit(_vec.fit_transform(_SAMPLES), _LABELS)
+
+# Lazy-loaded sklearn model — diinit saat pertama kali dipanggil
+_vec = None
+_clf = None
+
+def _get_sklearn_model():
+    global _vec, _clf
+    if _vec is None:
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        from sklearn.naive_bayes import MultinomialNB
+        _vec = TfidfVectorizer(ngram_range=(1, 2), min_df=1)
+        _clf = MultinomialNB(alpha=0.5).fit(_vec.fit_transform(_SAMPLES), _LABELS)
+    return _vec, _clf
 
 
 def _analyze_sklearn(text: str) -> dict:
-    X = _vec.transform([text.lower()])
+    vec, clf = _get_sklearn_model()
+    X = vec.transform([text.lower()])
     if X.nnz == 0:
-        # Fallback ke lexicon jika tidak ada kata yang cocok di vocabulary
         return _analyze_textblob(text)
-    pred = _clf.predict(X)[0]
-    prob = int(round(max(_clf.predict_proba(X)[0]) * 100))
+    pred = clf.predict(X)[0]
+    prob = int(round(max(clf.predict_proba(X)[0]) * 100))
     return {'sentiment': pred, 'confidence': prob}
 
 

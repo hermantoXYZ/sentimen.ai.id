@@ -3,7 +3,14 @@
   "builds": [
     {
       "src": "api/index.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "50mb"
+      }
+    },
+    {
+      "src": "statis/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -16,5 +23,10 @@
       "dest": "/api/index.py"
     }
   ],
-  "outputDirectory": "public"
+  "functions": {
+    "api/index.py": {
+      "maxDuration": 30,
+      "memory": 1024
+    }
+  }
 }
