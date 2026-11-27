@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="wap-bar-orange"><i class="fab fa-tiktok me-1"></i> TikTok Comment &amp; Video Analyzer</div>
+<div class="p-2 border-bottom">
+    <form method="POST">
+        <div class="mb-2">
+            <label class="fw-bold d-block mb-1">URL Video / Profil TikTok (atau @username):</label>
+            <input type="text" name="tiktok_url" value="{{ tiktok_url }}" placeholder="https://www.tiktok.com/@username/video/..." class="form-control" required>
+        </div>
+        <div class="mb-2">
+            <label class="fw-bold d-block mb-1">NLP Engine:</label>
+            <select name="engine" class="form-select select2-init">
+                <option value="textblob" {% if engine=='textblob' %}selected{% endif %}>NLTK / TextBlob</option>
+                <option value="sklearn" {% if engine=='sklearn' %}selected{% endif %}>scikit-learn</option>
+                <option value="bert" {% if engine=='bert' %}selected{% endif %}>Transformers (BERT)</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-wap w-100">&raquo; Analyze TikTok Now</button>
+    </form>
+</div>
+
+{% if result %}
+<div class="wap-bar-green"><i class="fas fa-check-circle me-1"></i> TikTok: {{ result.target }}</div>
+<div class="wap-stat-grid">
+    <div class="wap-stat-box"><span class="wap-stat-num text-primary">{{ result.total_posts }}</span><span class="wap-stat-lbl">Items</span></div>
+    <div class="wap-stat-box"><span class="wap-stat-num text-info">{{ result.total_likes }}</span><span class="wap-stat-lbl">Likes</span></div>
+    <div class="wap-stat-box"><span class="wap-stat-num text-success">{{ result.sentiment_summary.positive }}</span><span class="wap-stat-lbl">Positive</span></div>
+    <div class="wap-stat-box"><span class="wap-stat-num text-warning">{{ result.sentiment_summary.score }}%</span><span class="wap-stat-lbl">Pos Score</span></div>
+</div>
+<div class="p-2" style="font-size: 11px;">
+    <div class="d-flex justify-content-between bg-light border rounded p-2 mb-2">
+        <span><strong>Skor Sentimen:</strong> {{ result.sentiment_summary.score }}%</span>
+        <span class="text-success">Pos: {{ result.sentiment_summary.positive }}</span>
+        <span class="text-danger">Neg: {{ result.sentiment_summary.negative }}</span>
+        <span class="text-warning">Neu: {{ result.sentiment_summary.neutral }}</span>
+    </div>
+    <table class="table table-sm table-bordered mb-0" style="font-size: 10px;">
+        <thead class="table-light">
+            <tr><th>Komentar / Caption</th><th>Likes</th><th>Sentimen</th></tr>
+        </thead>
+        <tbody>
+            {% for p in result.posts %}
+            <tr>
+                <td><strong>{{ p.username }}</strong><br>{{ p.content }}</td>
+                <td>{{ p.likes }}</td>
+                <td class="text-center">
+                    <span class="badge bg-{{ 'success' if p.sentiment=='positive' else ('danger' if p.sentiment=='negative' else 'warning text-dark') }}">{{ p.sentiment }}</span>
+                    <div>{{ p.confidence }}%</div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

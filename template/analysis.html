@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="wap-bar-blue d-flex justify-content-between align-items-center">
+    <span><i class="fas fa-chart-bar me-1"></i> Sentiment Analysis</span>
+    <form method="GET" style="width: 140px;">
+        <select id="platformFilter" name="platform" class="form-select form-select-sm" onchange="this.form.submit()">
+            <option value="ALL">All Platforms</option>
+            {% for plat in platforms %}
+                <option value="{{ plat }}" {% if selected_platform==plat %}selected{% endif %}>{{ plat|capitalize }}</option>
+            {% endfor %}
+        </select>
+    </form>
+</div>
+
+<div class="wap-stat-grid">
+    <div class="wap-stat-box">
+        <span class="wap-stat-num text-danger">{{ total_likes }}</span>
+        <span class="wap-stat-lbl">Likes</span>
+    </div>
+    <div class="wap-stat-box">
+        <span class="wap-stat-num text-info">{{ total_shares }}</span>
+        <span class="wap-stat-lbl">Shares</span>
+    </div>
+    <div class="wap-stat-box">
+        <span class="wap-stat-num text-success">{{ avg_engagement }}</span>
+        <span class="wap-stat-lbl">Avg Eng.</span>
+    </div>
+    <div class="wap-stat-box">
+        <span class="wap-stat-num text-dark">{{ top_posts|length }}</span>
+        <span class="wap-stat-lbl">Top List</span>
+    </div>
+</div>
+
+<div class="p-2 border-bottom">
+    <div class="fw-bold mb-1 text-primary">&raquo; Sentiment Distribution</div>
+    <canvas id="donutSentiment" height="170"></canvas>
+</div>
+
+<div class="p-2 border-bottom">
+    <div class="fw-bold mb-1 text-primary">&raquo; Platform Share</div>
+    <canvas id="donutPlatform" height="170"></canvas>
+</div>
+
+<div class="p-2 border-bottom">
+    <div class="fw-bold mb-1 text-primary">&raquo; 7-Day Sentiment Trend</div>
+    <canvas id="trendChart" height="160"></canvas>
+</div>
+
+<div class="p-2 border-bottom">
+    <div class="fw-bold mb-1 text-primary">&raquo; WordCloud (Top Keywords)</div>
+    {% if top_keywords %}
+    <div class="bg-light border rounded p-2 text-center">
+        <canvas id="wordCloudCanvas" width="360" height="190" style="max-width: 100%;"></canvas>
+        <div id="wordCloudFallback" class="d-none flex-wrap justify-content-center align-items-center gap-2 py-2">
+            {% for word, count in top_keywords %}
+                {% set size = (11 + (count / max_kw_freq) * 14)|round|int %}
+                <span class="badge bg-{{ ['primary', 'success', 'danger', 'dark', 'info text-dark'][loop.index0 % 5] }}" style="font-size: {{ size }}px;">{{ word }} ({{ count }})</span>
+            {% endfor %}
+        </div>
+    </div>
+    {% else %}
+    <div class="text-muted small text-center py-2">Belum ada kata kunci untuk ditampilkan.</div>
+    {% endif %}
+</div>
+
+<div class="wap-bar-orange"><i class="fas fa-trophy me-1"></i> Top Engaging Posts</div>
+<div class="p-2">
+    <table id="topPostsTable" class="table table-sm table-bordered mb-0" style="font-size: 11px;">
+        <thead class="table-light">
+            <tr><th>User</th><th>Post</th><th>Sent.</th><th>Eng.</th></tr>
+        </thead>
+        <tbody>
+            {% for p in top_posts %}
+            <tr>
+                <td><span class="badge-wap badge-{{ p.platform }}">{{ p.platform }}</span><br>{{ p.username }}</td>
+                <td>{{ p.content[:50] }}...</td>
+                <td><span class="badge bg-{{ 'success' if p.sentiment=='positive' else ('danger' if p.sentiment=='negative' else 'warning text-dark') }}">{{ p.sentiment }}</span></td>
+                <td><strong>{{ p.engagement }}</strong></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

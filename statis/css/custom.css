@@ -1,0 +1,238 @@
+/* Gaya Klasik Waptrick / WAP 2.0 */
+body {
+    background-color: #d4dce6;
+    font-family: Tahoma, Verdana, Arial, sans-serif;
+    font-size: 12px;
+    color: #111111;
+    margin: 0;
+    padding: 8px 0 30px;
+}
+
+.wap-wrapper {
+    max-width: 680px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    border: 2px solid #003366;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+/* Header & Logo Ala Waptrick */
+.wap-header {
+    background: linear-gradient(180deg, #0055aa 0%, #003366 100%);
+    color: #ffffff;
+    padding: 8px 10px;
+    border-bottom: 3px solid #ff6600;
+}
+
+.wap-logo {
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.wap-logo span {
+    color: #ffcc00;
+}
+
+.wap-subtitle {
+    font-size: 10px;
+    color: #cce0ff;
+}
+
+/* Navigasi Strip */
+.wap-nav {
+    background-color: #eef3f8;
+    border-bottom: 1px solid #99b3cc;
+    padding: 4px 6px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.wap-nav a {
+    font-size: 11px;
+    font-weight: bold;
+    color: #003366;
+    text-decoration: none;
+    background: #ffffff;
+    border: 1px solid #88aadd;
+    padding: 2px 6px;
+}
+
+.wap-nav a.active,
+.wap-nav a:hover {
+    background-color: #ff6600;
+    color: #ffffff;
+    border-color: #cc5200;
+}
+
+/* Section Bar (Judul Kategori Ala Waptrick) */
+.wap-bar-blue {
+    background: linear-gradient(180deg, #1a66b3 0%, #004080 100%);
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 5px 8px;
+    border-top: 1px solid #00264d;
+    border-bottom: 1px solid #00264d;
+}
+
+.wap-bar-orange {
+    background: linear-gradient(180deg, #ff8533 0%, #e65c00 100%);
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 5px 8px;
+}
+
+.wap-bar-green {
+    background: linear-gradient(180deg, #2eb82e 0%, #1f7a1f 100%);
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 5px 8px;
+}
+
+/* List Menu Vertikal Khas Waptrick */
+.wap-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.wap-list li {
+    border-bottom: 1px solid #dce4ec;
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.wap-list li:nth-child(even) {
+    background-color: #f7f9fc;
+}
+
+.wap-list li a {
+    color: #004499;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.wap-list li a:hover {
+    color: #ff6600;
+    text-decoration: underline;
+}
+
+/* Box Statistik Ringkas */
+.wap-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-bottom: 1px solid #99b3cc;
+    background: #f9fbfd;
+    text-align: center;
+}
+
+.wap-stat-box {
+    padding: 6px 2px;
+    border-right: 1px solid #dce4ec;
+}
+
+.wap-stat-box:last-child {
+    border-right: none;
+}
+
+.wap-stat-num {
+    font-size: 14px;
+    font-weight: bold;
+    display: block;
+}
+
+.wap-stat-lbl {
+    font-size: 10px;
+    color: #555555;
+}
+
+/* Tombol & Form Retro */
+.btn-wap {
+    background: linear-gradient(180deg, #ff8533 0%, #e65c00 100%);
+    color: #ffffff;
+    border: 1px solid #b34700;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 2px;
+}
+
+.btn-wap:hover {
+    background: #cc5200;
+    color: #ffffff;
+}
+
+.btn-wap-blue {
+    background: linear-gradient(180deg, #1a66b3 0%, #004080 100%);
+    color: #ffffff;
+    border: 1px solid #00264d;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 2px;
+}
+
+.form-control,
+.form-select {
+    font-size: 11px;
+    border-radius: 2px;
+    border: 1px solid #7f9db9;
+    padding: 4px 6px;
+}
+
+/* Badge Platform & Sentimen */
+.badge-wap {
+    font-size: 10px;
+    padding: 2px 5px;
+    border-radius: 2px;
+    font-weight: bold;
+    display: inline-block;
+}
+
+.badge-youtube {
+    background-color: #cc0000;
+    color: #fff;
+}
+
+.badge-instagram {
+    background-color: #c13584;
+    color: #fff;
+}
+
+.badge-twitter {
+    background-color: #0084b4;
+    color: #fff;
+}
+
+.badge-tiktok {
+    background-color: #111111;
+    color: #fff;
+}
+
+.badge-facebook {
+    background-color: #3b5998;
+    color: #fff;
+}
+
+/* Footer Waptrick */
+.wap-footer {
+    background-color: #003366;
+    color: #ffffff;
+    text-align: center;
+    font-size: 10px;
+    padding: 6px;
+    border-top: 2px solid #ff6600;
+}
+
+.badge-threads {
+    background-color: #101010;
+    color: #fff;
+}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="wap-bar-blue"><i class="fas fa-upload me-1"></i> Upload Social Media CSV</div>
+<div class="p-2">
+    <div class="bg-light border p-2 mb-2" style="font-size: 11px;">
+        <strong>Kolom Wajib:</strong> <code>platform, username, text</code><br>
+        <strong>Opsional:</strong> <code>created_at, likes, shares</code>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        <div class="mb-2">
+            <label class="fw-bold d-block mb-1">1. Pilih Engine NLP:</label>
+            <select name="engine" class="form-select select2-init">
+                <option value="textblob">NLTK / TextBlob (Fast WAP)</option>
+                <option value="sklearn">scikit-learn (Naive Bayes)</option>
+                <option value="bert">Transformers (IndoBERT)</option>
+            </select>
+        </div>
+        <div class="mb-2">
+            <label class="fw-bold d-block mb-1">2. Pilih File CSV (Max 16MB):</label>
+            <input type="file" name="file" accept=".csv" class="form-control" required>
+        </div>
+        <div class="d-flex gap-1">
+            <button type="submit" class="btn btn-wap flex-grow-1">&raquo; Upload &amp; Analyze</button>
+            <a href="{{ url_for('download_sample_csv') }}" class="btn btn-wap-blue">Sample CSV</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

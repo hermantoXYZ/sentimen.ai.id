@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="wap-bar-orange"><i class="fab fa-youtube me-1"></i> YouTube Comment &amp; Channel Analyzer</div>
+<div class="p-2 border-bottom">
+    <form method="POST">
+        <div class="mb-2">
+            <label class="fw-bold d-block mb-1">URL Video YouTube (atau Channel ID / @Handle):</label>
+            <input type="text" id="ytChannelInput" name="channel_id" value="{{ channel_id }}" placeholder="https://www.youtube.com/watch?v=M-EIzSoEIe8" class="form-control" required>
+        </div>
+        <div class="mb-2">
+            <label class="fw-bold d-block mb-1">NLP Engine:</label>
+            <select name="engine" class="form-select select2-init">
+                <option value="textblob" {% if engine=='textblob' %}selected{% endif %}>NLTK / TextBlob</option>
+                <option value="sklearn" {% if engine=='sklearn' %}selected{% endif %}>scikit-learn</option>
+                <option value="bert" {% if engine=='bert' %}selected{% endif %}>Transformers (BERT)</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-wap w-100">&raquo; Analyze YouTube Now</button>
+    </form>
+
+    <div class="mt-2 pt-2 border-top">
+        <span class="fw-bold text-muted" style="font-size: 10px;">Quick Sample Channels:</span><br>
+        <div class="d-flex gap-1 mt-1">
+            <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2 sample-ch" style="font-size:10px;" data-id="@Code & Support">@Code &amp; Support</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2 sample-ch" style="font-size:10px;" data-id="@MrBeast">@MrBeast</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm py-0 px-2 sample-ch" style="font-size:10px;" data-id="@PewDiePie">@PewDiePie</button>
+        </div>
+    </div>
+</div>
+
+{% if result %}
+<div class="wap-bar-green"><i class="fas fa-check-circle me-1"></i> {{ result.video_title if result.mode == 'video_comments' else result.channel_title }}</div>
+<div class="wap-stat-grid">
+    <div class="wap-stat-box"><span class="wap-stat-num text-primary">{{ result.videos_analyzed }}</span><span class="wap-stat-lbl">{{ 'Komentar' if result.mode == 'video_comments' else 'Videos' }}</span></div>
+    <div class="wap-stat-box"><span class="wap-stat-num text-success">{{ result.total_views }}</span><span class="wap-stat-lbl">Views</span></div>
+    <div class="wap-stat-box"><span class="wap-stat-num text-info">{{ result.total_likes }}</span><span class="wap-stat-lbl">Likes</span></div>
+    <div class="wap-stat-box"><span class="wap-stat-num text-warning">{{ result.sentiment_summary.score if result.sentiment_summary else 0 }}%</span><span class="wap-stat-lbl">Pos Score</span></div>
+</div>
+<div class="p-2" style="font-size: 11px;">
+    <p class="mb-1"><strong>{{ 'Channel:' if result.mode == 'video_comments' else 'Best Video:' }}</strong> {{ result.channel_title if result.mode == 'video_comments' else result.best_video.title }}</p>
+    <p class="text-muted mb-2">{{ result.description[:180] }}</p>
+    {% if result.sentiment_summary %}
+    <div class="d-flex justify-content-between bg-light border rounded p-2 mb-2">
+        <span><strong>Skor Sentimen:</strong> {{ result.sentiment_summary.score }}%</span>
+        <span class="text-success">Pos: {{ result.sentiment_summary.positive }}</span>
+        <span class="text-danger">Neg: {{ result.sentiment_summary.negative }}</span>
+        <span class="text-warning">Neu: {{ result.sentiment_summary.neutral }}</span>
+    </div>
+    {% endif %}
+    <table class="table table-sm table-bordered mb-0" style="font-size: 10px;">
+        <thead class="table-light">
+            <tr><th>{{ 'Komentar' if result.mode == 'video_comments' else 'Judul Video' }}</th><th>Likes</th><th>Sentimen</th></tr>
+        </thead>
+        <tbody>
+            {% for p in result.posts %}
+            <tr>
+                <td>
+                    {% if result.mode == 'video_comments' %}<strong>{{ p.username }}</strong><br>{% endif %}
+                    {{ p.content }}
+                </td>
+                <td>{{ p.likes }}</td>
+                <td class="text-center">
+                    <span class="badge bg-{{ 'success' if p.sentiment=='positive' else ('danger' if p.sentiment=='negative' else 'warning text-dark') }}">{{ p.sentiment }}</span>
+                    <div>{{ p.confidence }}%</div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

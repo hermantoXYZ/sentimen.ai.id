@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="wap-bar-orange">
+    <i class="fas fa-chart-pie me-1"></i> Brand Sentiment Summary (Score: {{ sentiment_score }}%)
+</div>
+
+<!-- Grid Angka Statistik -->
+<div class="wap-stat-grid">
+    <div class="wap-stat-box">
+        <span class="wap-stat-num text-primary">{{ total_posts }}</span>
+        <span class="wap-stat-lbl">Total</span>
+    </div>
+    <div class="wap-stat-box">
+        <span class="wap-stat-num text-success">{{ pos_count }}</span>
+        <span class="wap-stat-lbl">Positive</span>
+    </div>
+    <div class="wap-stat-box">
+        <span class="wap-stat-num text-danger">{{ neg_count }}</span>
+        <span class="wap-stat-lbl">Negative</span>
+    </div>
+    <div class="wap-stat-box">
+        <span class="wap-stat-num text-warning">{{ neu_count }}</span>
+        <span class="wap-stat-lbl">Neutral</span>
+    </div>
+</div>
+
+<!-- Quick Text Sentiment Input -->
+<div class="wap-bar-blue">
+    <i class="fas fa-keyboard me-1"></i> Quick Text Sentiment Analyzer
+</div>
+<div class="p-2 border-bottom">
+    <form method="POST" action="{{ url_for('analyze_text') }}">
+        <div class="mb-2">
+            <textarea name="text" rows="2" class="form-control form-control-sm" placeholder="Ketik komentar atau teks untuk dianalisis sentimennya..." required></textarea>
+        </div>
+        <div class="mb-2">
+            <select name="engine" class="form-select form-select-sm">
+                <option value="textblob">NLTK / TextBlob</option>
+                <option value="sklearn">scikit-learn</option>
+                <option value="bert">Transformers (BERT)</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-wap w-100">&raquo; Analyze &amp; Add Text</button>
+    </form>
+</div>
+
+<!-- Direktori Menu Ala Waptrick -->
+<div class="wap-bar-blue">
+    <i class="fas fa-folder-open me-1"></i> Main Categories &amp; Tools
+</div>
+<ul class="wap-list">
+    <li>
+        <div>
+            <i class="fas fa-file-csv text-primary me-1"></i>
+            <a href="{{ url_for('upload') }}">Upload Dataset CSV</a>
+            <div class="text-muted" style="font-size: 10px;">Batch sentiment analysis (TextBlob, Sklearn, BERT)</div>
+        </div>
+        <span class="badge bg-warning text-dark">HOT</span>
+    </li>
+    <li>
+        <div>
+            <i class="fas fa-chart-line text-success me-1"></i>
+            <a href="{{ url_for('analysis') }}">Sentiment &amp; Trend Charts</a>
+            <div class="text-muted" style="font-size: 10px;">Donut distribution, 7-day trend &amp; top posts</div>
+        </div>
+        <span class="text-muted">&raquo;</span>
+    </li>
+    <li>
+        <div>
+            <i class="fab fa-youtube text-danger me-1"></i>
+            <a href="{{ url_for('youtube_analyzer') }}">YouTube Comment Analyzer</a>
+            <div class="text-muted" style="font-size: 10px;">Analyze YouTube video comments &amp; channel sentiment</div>
+        </div>
+        <span class="badge bg-danger">NEW</span>
+    </li>
+    <li>
+        <div>
+            <i class="fas fa-at text-dark me-1"></i>
+            <a href="{{ url_for('threads_analyzer') }}">Threads Post &amp; Reply Analyzer</a>
+            <div class="text-muted" style="font-size: 10px;">Analyze Threads post/profile URL sentiment</div>
+        </div>
+        <span class="badge bg-dark">NEW</span>
+    </li>
+    <li>
+        <div>
+            <i class="fab fa-tiktok text-dark me-1"></i>
+            <a href="{{ url_for('tiktok_analyzer') }}">TikTok Comment &amp; Video Analyzer</a>
+            <div class="text-muted" style="font-size: 10px;">Analyze TikTok video comments &amp; captions</div>
+        </div>
+        <span class="badge bg-dark">NEW</span>
+    </li>
+    <li>
+        <div>
+            <i class="fab fa-twitter text-info me-1"></i>
+            <a href="{{ url_for('twitter_analyzer') }}">Twitter / X Sentiment Analyzer</a>
+            <div class="text-muted" style="font-size: 10px;">Analyze tweet &amp; timeline sentiment</div>
+        </div>
+        <span class="badge bg-info text-dark">NEW</span>
+    </li>
+    <li>
+        <div>
+            <i class="fas fa-satellite-dish text-info me-1"></i>
+            <a href="{{ url_for('live_monitor') }}">Real-Time Live Monitor</a>
+            <div class="text-muted" style="font-size: 10px;">Live sentiment stream &amp; negative spike alerts</div>
+        </div>
+        <span class="badge bg-success">LIVE</span>
+    </li>
+</ul>
+
+<!-- Platform Counter -->
+<div class="wap-bar-blue">
+    <i class="fas fa-globe me-1"></i> Platform Index
+</div>
+<div class="wap-stat-grid">
+    <div class="wap-stat-box">
+        <span class="wap-stat-num text-danger">{{ platform_counts.get('youtube', 0) }}</span>
+        <span class="wap-stat-lbl">YouTube</span>
+    </div>
+    <div class="wap-stat-box">
+        <span class="wap-stat-num" style="color:#c13584;">{{ platform_counts.get('instagram', 0) }}</span>
+        <span class="wap-stat-lbl">Instagram</span>
+    </div>
+    <div class="wap-stat-box">
+        <span class="wap-stat-num text-info">{{ platform_counts.get('twitter', 0) }}</span>
+        <span class="wap-stat-lbl">Twitter/X</span>
+    </div>
+    <div class="wap-stat-box">
+        <span class="wap-stat-num text-dark">{{ platform_counts.get('tiktok', 0) }}</span>
+        <span class="wap-stat-lbl">TikTok</span>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="wap-bar-green d-flex justify-content-between align-items-center">
+    <span><i class="fas fa-list me-1"></i> Latest Analyzed Posts</span>
+    <form method="POST" action="{{ url_for('clear_data') }}" onsubmit="return confirm('Hapus semua data analisis lama?');">
+        <button type="submit" class="btn btn-sm btn-light text-danger py-0 px-2" style="font-size: 10px;">Reset Data</button>
+    </form>
+</div>
+<div class="p-2">
+    <table id="recentTable" class="table table-sm table-bordered mb-0" style="font-size: 11px;">
+        <thead class="table-light">
+            <tr>
+                <th>Source</th>
+                <th>Content</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in recent_posts %}
+            <tr>
+                <td>
+                    <span class="badge-wap badge-{{ p.platform }}">{{ p.platform }}</span><br>
+                    <small class="text-muted">{{ p.username }}</small>
+                </td>
+                <td>
+                    {{ p.content[:55] }}...<br>
+                    <small class="text-muted">&hearts; {{ p.likes }} &bull; {{ p.created_at.strftime('%d/%m/%y') }}</small>
+                </td>
+                <td class="text-center">
+                    <span class="badge bg-{{ 'success' if p.sentiment=='positive' else ('danger' if p.sentiment=='negative' else 'warning text-dark') }}">
+                        {{ p.sentiment }}
+                    </span><br>
+                    <small>{{ p.confidence }}%</small>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
