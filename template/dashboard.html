@@ -99,6 +99,14 @@
     </li>
     <li>
         <div>
+            <i class="fab fa-instagram me-1" style="color:#c13584;"></i>
+            <a href="{{ url_for('instagram_analyzer') }}">Instagram Post &amp; Profile Analyzer</a>
+            <div class="text-muted" style="font-size: 10px;">Analyze Instagram captions &amp; profile posts</div>
+        </div>
+        <span class="badge text-white" style="background-color:#c13584;">NEW</span>
+    </li>
+    <li>
+        <div>
             <i class="fas fa-satellite-dish text-info me-1"></i>
             <a href="{{ url_for('live_monitor') }}">Real-Time Live Monitor</a>
             <div class="text-muted" style="font-size: 10px;">Live sentiment stream &amp; negative spike alerts</div>
@@ -127,6 +135,24 @@
     <div class="wap-stat-box">
         <span class="wap-stat-num text-dark">{{ platform_counts.get('tiktok', 0) }}</span>
         <span class="wap-stat-lbl">TikTok</span>
+    </div>
+</div>
+<div class="wap-stat-grid border-top-0">
+    <div class="wap-stat-box">
+        <span class="wap-stat-num text-dark">{{ platform_counts.get('threads', 0) }}</span>
+        <span class="wap-stat-lbl">Threads</span>
+    </div>
+    <div class="wap-stat-box">
+        <span class="wap-stat-num text-secondary">{{ platform_counts.get('text', 0) }}</span>
+        <span class="wap-stat-lbl">Quick Text</span>
+    </div>
+    <div class="wap-stat-box">
+        <span class="wap-stat-num text-primary">{{ total_posts }}</span>
+        <span class="wap-stat-lbl">All Posts</span>
+    </div>
+    <div class="wap-stat-box">
+        <span class="wap-stat-num text-success">{{ sentiment_score }}%</span>
+        <span class="wap-stat-lbl">Score</span>
     </div>
 </div>
 

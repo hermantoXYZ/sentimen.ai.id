@@ -12,6 +12,7 @@ from layanan.youtube_service import analyze_youtube_url
 from layanan.threads_service import analyze_threads_url
 from layanan.tiktok_service import analyze_tiktok_url
 from layanan.twitter_service import analyze_twitter_url
+from layanan.instagram_service import analyze_instagram_url, analyze_instagram_manual
 
 load_dotenv()
 
@@ -177,6 +178,53 @@ def download_sample_csv():
         download_name='sample_social_media_data.csv'
     )
 
+# ─── Helper: Hitung Precision, Recall, F1, Accuracy dari data posts ─────────
+def _compute_metrics(posts):
+    """
+    Karena tidak ada ground-truth label, pendekatan yang digunakan:
+    - confidence >= 60  → dianggap prediksi 'yakin/benar' (True Positive proxy)
+    - confidence < 60   → dianggap prediksi 'ragu/salah' (False Positive proxy)
+    Metrik ini bersifat SELF-CONFIDENCE estimate, bukan evaluasi eksternal.
+    """
+    classes = ['positive', 'negative', 'neutral']
+    total = len(posts)
+    if total == 0:
+        return None
+
+    correct = sum(1 for p in posts if (p.confidence or 0) >= 60)
+    accuracy = round(correct / total * 100, 1)
+
+    per_class = {}
+    for c in classes:
+        tp = sum(1 for p in posts if p.sentiment == c and (p.confidence or 0) >= 60)
+        fp = sum(1 for p in posts if p.sentiment == c and (p.confidence or 0) < 60)
+        fn = sum(1 for p in posts if p.sentiment != c and (p.confidence or 0) >= 60)
+        support = sum(1 for p in posts if p.sentiment == c)
+
+        precision = round(tp / (tp + fp) * 100, 1) if (tp + fp) > 0 else 0.0
+        recall    = round(tp / (tp + fn) * 100, 1) if (tp + fn) > 0 else 0.0
+        f1        = round(2 * precision * recall / (precision + recall), 1) if (precision + recall) > 0 else 0.0
+
+        per_class[c] = {
+            'precision': precision,
+            'recall': recall,
+            'f1': f1,
+            'support': support
+        }
+
+    # Macro-average
+    macro_p  = round(sum(v['precision'] for v in per_class.values()) / 3, 1)
+    macro_r  = round(sum(v['recall']    for v in per_class.values()) / 3, 1)
+    macro_f1 = round(sum(v['f1']        for v in per_class.values()) / 3, 1)
+
+    return {
+        'accuracy': accuracy,
+        'per_class': per_class,
+        'macro': {'precision': macro_p, 'recall': macro_r, 'f1': macro_f1},
+        'total': total
+    }
+
+
 # 3. ANALYSIS PAGE
 @app.route('/analyze')
 def analysis():
@@ -194,6 +242,7 @@ def analysis():
     top_keywords = extract_top_keywords([p.content for p in posts], top_n=35)
     max_kw_freq = top_keywords[0][1] if top_keywords else 1
     platforms = [r[0] for r in db.session.query(SocialPost.platform).distinct().all()]
+    metrics = _compute_metrics(posts)
 
     return render_template(
         'analysis.html',
@@ -204,7 +253,8 @@ def analysis():
         top_keywords=top_keywords,
         max_kw_freq=max_kw_freq,
         platforms=platforms,
-        selected_platform=selected_platform
+        selected_platform=selected_platform,
+        metrics=metrics
     )
 
 @app.route('/api/analysis-charts')
@@ -446,12 +496,55 @@ def twitter_analyzer():
     return render_template('twitter_analyzer.html', result=result, twitter_url=twitter_url, engine=engine)
 
 
+# 4E. INSTAGRAM ANALYZER
+@app.route('/instagram-analyzer', methods=['GET', 'POST'])
+def instagram_analyzer():
+    result = None
+    instagram_url = ''
+    ig_account = ''
+    raw_comments = ''
+    engine = 'textblob'
+    if request.method == 'POST':
+        mode = request.form.get('mode', 'url')
+        engine = request.form.get('engine', 'textblob')
+        try:
+            if mode == 'manual':
+                ig_account = request.form.get('ig_account', '').strip()
+                raw_comments = request.form.get('raw_comments', '')
+                result = analyze_instagram_manual(ig_account, raw_comments)
+            else:
+                instagram_url = request.form.get('instagram_url', '').strip()
+                result = analyze_instagram_url(instagram_url)
+
+            result['sentiment_summary'] = _score_and_save_posts(result['posts'], 'instagram', engine)
+            flash(
+                f"Berhasil menganalisis {result['total_posts']} post Instagram dari {result['target']} ({engine.upper()})",
+                'success'
+            )
+        except Exception as e:
+            flash(f'Gagal menganalisis Instagram: {str(e)}', 'danger')
+
+    return render_template(
+        'instagram_analyzer.html',
+        result=result,
+        instagram_url=instagram_url,
+        ig_account=ig_account,
+        raw_comments=raw_comments,
+        engine=engine
+    )
+
+
 @app.route('/clear-data', methods=['POST'])
 def clear_data():
     deleted = SocialPost.query.delete()
     db.session.commit()
     flash(f'Berhasil menghapus {deleted} data analisis lama.', 'success')
     return redirect(request.referrer or url_for('dashboard'))
+
+@app.route('/panduan')
+def panduan():
+    return render_template('panduan.html')
+
 
 # 5. LIVE MONITOR
 @app.route('/live-monitor')

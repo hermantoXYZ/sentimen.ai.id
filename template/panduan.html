@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block title %}Panduan Penggunaan - Sentimen.ai.id{% endblock %}
+{% block content %}
+<div class="wap-bar-orange">
+    <i class="fas fa-book-open me-1"></i> Panduan Penggunaan Sentimen.ai.id
+</div>
+
+<div class="p-2 border-bottom bg-light" style="font-size: 11.5px;">
+    <strong>Sentimen.ai.id</strong> adalah portal monitoring dan analisis sentimen teks maupun media sosial berbasis Flask &amp; NLP.
+    Semua hasil analisis otomatis tersimpan ke database lokal (<code>instance/social_monitor.db</code>) dan langsung memperbarui grafik serta statistik di seluruh halaman.
+</div>
+
+<!-- 1. Alur Kerja -->
+<div class="wap-bar-blue"><i class="fas fa-sitemap me-1"></i> 1. Alur Kerja Umum</div>
+<div class="p-2 border-bottom" style="font-size: 11.5px;">
+    <ol class="mb-0 ps-3">
+        <li><strong>Masukkan Data</strong> melalui <em>Quick Text Analyzer</em> di Home, <em>Upload CSV</em>, atau salah satu analyzer media sosial (<em>YouTube, Threads, TikTok, Twitter/X, Instagram</em>).</li>
+        <li><strong>Pilih Model NLP</strong> yang ingin digunakan untuk mengklasifikasikan sentimen menjadi <code>positive</code>, <code>negative</code>, atau <code>neutral</code> beserta skor <em>confidence (%)</em>.</li>
+        <li><strong>Lihat Visualisasi &amp; Tren</strong> di menu <strong>[Analysis]</strong> (Donut Chart, Tren 7 Hari, WordCloud, dan Top Engaging Posts) atau pantau di <strong>[Live!]</strong>.</li>
+    </ol>
+</div>
+
+<!-- 2. Pilihan Model NLP -->
+<div class="wap-bar-blue"><i class="fas fa-brain me-1"></i> 2. Pilihan Engine / Model NLP (Model, Formula &amp; Referensi)</div>
+<ul class="wap-list" style="font-size: 11.5px;">
+    <li class="d-block">
+        <div class="d-flex justify-content-between align-items-start">
+            <strong>1) NLTK / TextBlob (Lexicon-Based + Negation Shifting)</strong>
+            <span class="badge bg-primary">FAST</span>
+        </div>
+        <div class="text-muted mt-1">
+            Analisis cepat berbasis kamus kata positif/negatif Bahasa Indonesia &amp; Inggris (<code>POS_ID</code>, <code>NEG_ID</code>), dilengkapi deteksi kata negasi (<em>tidak, bukan, kurang, gak, belum</em>) serta polaritas TextBlob.
+        </div>
+        <div class="bg-light border rounded p-2 mt-1" style="font-size: 10.5px;">
+            <strong>Persamaan Matematis:</strong>
+            <div class="my-1 overflow-auto">
+                $$S(d) = \sum_{i=1}^{n} \delta(w_{i-1}) \cdot \text{pol}(w_i)$$
+            </div>
+            di mana fungsi pembalik negasi $\delta(w_{i-1})$ dan fungsi aturan klasifikasi akhir didefinisikan sebagai:
+            <div class="my-1 overflow-auto">
+                $$\delta(w_{i-1}) = \begin{cases} -1, & \text{jika } w_{i-1} \in \mathcal{N} \text{ (kata negasi)} \\ +1, & \text{lainnya} \end{cases}$$
+                $$\hat{y} = \begin{cases} \text{Positive}, & \text{jika } S(d) > 0 \text{ atau } (S(d) = 0 \land p > 0.1) \\ \text{Negative}, & \text{jika } S(d) < 0 \text{ atau } (S(d) = 0 \land p < -0.1) \\ \text{Neutral}, & \text{jika } S(d) = 0 \land -0.1 \le p \le 0.1 \end{cases}$$
+            </div>
+            dengan $p \in [-1.0, +1.0]$ merupakan skor polaritas kontinyu dari TextBlob.
+            <div class="mt-1 text-secondary">
+                <strong>Referensi:</strong>
+                Bird et al. (2009), <em>Natural Language Processing with Python</em> (NLTK);
+                Loria (2018), <em>TextBlob: Simplified Text Processing</em>;
+                Liu (2012), <em>Sentiment Analysis and Opinion Mining</em> (Lexicon &amp; Negation Shifting).
+            </div>
+        </div>
+    </li>
+
+    <li class="d-block">
+        <div class="d-flex justify-content-between align-items-start">
+            <strong>2) scikit-learn (<code>TfidfVectorizer</code> + <code>MultinomialNB</code>)</strong>
+            <span class="badge bg-success">ML</span>
+        </div>
+        <div class="text-muted mt-1">
+            Model klasifikasi <em>Multinomial Naive Bayes</em> dengan pembobotan fitur <strong>TF-IDF</strong> n-gram <code>(1, 2)</code> dan <em>Laplace/Lidstone smoothing</em> ($\alpha = 0.5$) yang dilatih pada korpus kalimat Indonesia &amp; Inggris.
+        </div>
+        <div class="bg-light border rounded p-2 mt-1" style="font-size: 10.5px;">
+            <strong>Persamaan Matematis:</strong>
+            <div class="my-1 overflow-auto">
+                $$\text{TF-IDF}(t, d) = \text{tf}(t, d) \times \left[ \ln\left(\frac{1 + N}{1 + \text{df}(t)}\right) + 1 \right]$$
+                $$\hat{y} = \arg\max_{c \in \mathcal{C}} \left[ \ln P(c) + \sum_{i=1}^{|V|} x_i \ln P(t_i \mid c) \right]$$
+            </div>
+            dengan estimasi probabilitas bersyarat menggunakan <em>Lidstone smoothing</em>:
+            <div class="my-1 overflow-auto">
+                $$P(t_i \mid c) = \frac{N_{c,i} + \alpha}{N_c + \alpha |V|}$$
+            </div>
+            di mana $N$ adalah jumlah total dokumen, $\text{df}(t)$ adalah frekuensi dokumen term $t$, $x_i$ adalah bobot TF-IDF fitur ke-$i$, dan $|V|$ adalah ukuran kosakata (<em>vocabulary</em>).
+            <div class="mt-1 text-secondary">
+                <strong>Referensi:</strong>
+                Pedregosa et al. (2011), <em>Scikit-learn: Machine Learning in Python</em>, JMLR 12;
+                McCallum &amp; Nigam (1998), <em>A Comparison of Event Models for Naive Bayes Text Classification</em>, AAAI-98;
+                Manning et al. (2008), <em>Introduction to Information Retrieval</em> (TF-IDF &amp; Naive Bayes).
+            </div>
+        </div>
+    </li>
+
+    <li class="d-block">
+        <div class="d-flex justify-content-between align-items-start">
+            <strong>3) Transformers (IndoBERT — <code>mdhugol/indonesia-bert-sentiment-classification</code>)</strong>
+            <span class="badge bg-warning text-dark">DEEP</span>
+        </div>
+        <div class="text-muted mt-1">
+            Model <em>Deep Learning</em> berbasis arsitektur Transformer dua arah (BERT) yang di-<em>fine-tune</em> khusus untuk klasifikasi sentimen Bahasa Indonesia (maksimal 512 token). Otomatis beralih ke <code>scikit-learn</code> jika library <code>transformers</code> belum terpasang.
+        </div>
+        <div class="bg-light border rounded p-2 mt-1" style="font-size: 10.5px;">
+            <strong>Persamaan Matematis:</strong>
+            <div class="my-1 overflow-auto">
+                $$\text{Attention}(Q, K, V) = \text{softmax}\left(\frac{Q K^\top}{\sqrt{d_k}}\right) V$$
+                $$P(y = c \mid \mathbf{h}_{[\text{CLS}]}) = \frac{\exp(\mathbf{w}_c^\top \mathbf{h}_{[\text{CLS}]} + b_c)}{\sum_{k \in \mathcal{C}} \exp(\mathbf{w}_k^\top \mathbf{h}_{[\text{CLS}]} + b_k)}$$
+                $$\hat{y} = \arg\max_{c \in \mathcal{C}} P(y = c \mid \mathbf{h}_{[\text{CLS}]})$$
+            </div>
+            di mana $Q, K, V$ adalah matriks <em>Query, Key, Value</em> berdimensi $d_k$, dan $\mathbf{h}_{[\text{CLS}]} \in \mathbb{R}^{768}$ adalah vektor representasi agregat dari token klasifikasi <code>[CLS]</code> pada lapisan akhir encoder.
+            <div class="mt-1 text-secondary">
+                <strong>Referensi:</strong>
+                Devlin et al. (2019), <em>BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding</em>, NAACL-HLT;
+                Wilie et al. (2020), <em>IndoNLU: Benchmark and Resources for Evaluating Indonesian NLU</em> (IndoBERT), AACL-IJCNLP;
+                Vaswani et al. (2017), <em>Attention Is All You Need</em>, NeurIPS.
+            </div>
+        </div>
+    </li>
+</ul>
+
+<!-- 3. Panduan Per Halaman -->
+<div class="wap-bar-blue"><i class="fas fa-compass me-1"></i> 3. Panduan Fitur &amp; Halaman</div>
+<div class="p-2 border-bottom" style="font-size: 11.5px;">
+    <div class="mb-2 pb-2 border-bottom">
+        <strong>A. Home / Dashboard (<code>/</code>)</strong>
+        <ul class="mb-0 ps-3 mt-1">
+            <li><strong>Brand Sentiment Summary:</strong> Menampilkan skor sentimen keseluruhan (<code>0–100%</code>) serta jumlah post Total, Positive, Negative, dan Neutral.</li>
+            <li><strong>Quick Text Sentiment Analyzer:</strong> Ketik langsung komentar atau kalimat uji, pilih model NLP, lalu klik <em>Analyze &amp; Add Text</em>.</li>
+            <li><strong>Reset Data:</strong> Klik tombol <em>Reset Data</em> di bar <em>Latest Analyzed Posts</em> jika ingin menghapus seluruh data analisis lama dan memulai dari awal.</li>
+        </ul>
+    </div>
+
+    <div class="mb-2 pb-2 border-bottom">
+        <strong>B. Upload Dataset CSV (<code>/upload</code>)</strong>
+        <ul class="mb-0 ps-3 mt-1">
+            <li>Kolom wajib pada file CSV: <code>platform, username, text</code>.</li>
+            <li>Kolom opsional: <code>created_at, likes, shares</code>. Ukuran maksimal file <strong>16 MB</strong>.</li>
+            <li>Gunakan tombol <strong>Sample CSV</strong> untuk mengunduh contoh format CSV yang benar.</li>
+        </ul>
+    </div>
+
+    <div class="mb-2 pb-2 border-bottom">
+        <strong>C. Analysis &amp; WordCloud (<code>/analyze</code>)</strong>
+        <ul class="mb-0 ps-3 mt-1">
+            <li>Filter berdasarkan platform melalui dropdown di kanan atas (<em>All Platforms</em> atau per platform).</li>
+            <li>Menampilkan grafik <em>Sentiment Distribution</em>, <em>Platform Share</em>, <em>7-Day Sentiment Trend</em>, <strong>WordCloud (Top Keywords)</strong>, serta tabel <strong>Top Engaging Posts</strong> (hingga 50 post terbaru/engagement tertinggi).</li>
+        </ul>
+    </div>
+
+    <div class="mb-2 pb-2 border-bottom">
+        <strong>D. YouTube Analyzer (<code>/youtube-analyzer</code>)</strong>
+        <ul class="mb-0 ps-3 mt-1">
+            <li><strong>URL Video:</strong> Tempelkan URL seperti <code>https://www.youtube.com/watch?v=...</code>, <code>youtu.be/...</code>, atau <code>/shorts/...</code> untuk mengambil dan menganalisis sentimen komentar video.</li>
+            <li><strong>Channel / Handle:</strong> Masukkan <code>@handle</code> (mis. <code>@MrBeast</code>) atau Channel ID (<code>UC...</code>) untuk menganalisis daftar video channel.</li>
+        </ul>
+    </div>
+
+    <div class="mb-2 pb-2 border-bottom">
+        <strong>E. Threads, TikTok, Twitter/X, &amp; Instagram Analyzer</strong>
+        <ul class="mb-0 ps-3 mt-1">
+            <li><strong>Threads (<code>/threads-analyzer</code>):</strong> Masukkan URL post/profil <code>threads.net</code> / <code>threads.com</code> atau <code>@username</code>.</li>
+            <li><strong>TikTok (<code>/tiktok-analyzer</code>):</strong> Masukkan URL video (<code>tiktok.com/@user/video/...</code>, <code>vt.tiktok.com/...</code>) atau <code>@username</code>.</li>
+            <li><strong>Twitter/X (<code>/twitter-analyzer</code>):</strong> Masukkan URL tweet (<code>x.com/user/status/...</code>) atau <code>@username</code>.</li>
+            <li><strong>Instagram (<code>/instagram-analyzer</code>):</strong> Masukkan URL post/reel (<code>instagram.com/p/...</code>) atau <code>@username</code>. Jika akses publik Instagram dibatasi login, gunakan form <strong>Paste Komentar / Caption IG</strong> (1 baris = 1 item, opsional format <code>username: isi komentar</code>).</li>
+        </ul>
+    </div>
+
+    <div>
+        <strong>F. Live Monitor (<code>/live-monitor</code>)</strong>
+        <ul class="mb-0 ps-3 mt-1">
+            <li>Memantau 15 data terbaru secara otomatis setiap <strong>5 detik</strong> melalui <code>/api/live-feed</code>.</li>
+            <li>Menampilkan <em>Live Gauge Chart</em> serta peringatan otomatis apabila rasio sentimen negatif melebihi <strong>25%</strong>.</li>
+        </ul>
+    </div>
+</div>
+
+<!-- 4. Konfigurasi API Opsional -->
+<div class="wap-bar-green"><i class="fas fa-key me-1"></i> 4. Konfigurasi API Opsional (File <code>.env</code>)</div>
+<div class="p-2" style="font-size: 11px;">
+    <p class="mb-1">Aplikasi dapat berjalan tanpa API key untuk mode publik/input manual. Untuk hasil lebih lengkap pada masing-masing platform, Anda dapat menambahkan token berikut di file <code>.env</code> lalu me-restart server:</p>
+    <pre class="bg-light border rounded p-2 mb-2" style="font-size: 10.5px;">YOUTUBE_API_KEY=isi_api_key_youtube
+THREADS_ACCESS_TOKEN=isi_token_threads
+TWITTER_BEARER_TOKEN=isi_bearer_token_x
+INSTAGRAM_ACCESS_TOKEN=isi_token_instagram</pre>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-wap btn-sm">&laquo; Kembali ke Home</a>
+</div>
+
+<!-- Konfigurasi & Loader MathJax untuk Render LaTeX -->
+<script>
+window.MathJax = {
+  tex: {
+    inlineMath: [['$', '$'], ['\\(', '\\)']],
+    displayMath: [['$$', '$$'], ['\\[', '\\]']]
+  },
+  svg: {
+    fontCache: 'global'
+  }
+};
+</script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+{% endblock %}

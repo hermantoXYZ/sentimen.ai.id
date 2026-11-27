@@ -1,35 +1,47 @@
-/* Gaya Klasik Waptrick / WAP 2.0 */
+/* Gaya Klasik Waptrick / WAP 2.0 + Responsif Modern */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 body {
-    background-color: #d4dce6;
-    font-family: Tahoma, Verdana, Arial, sans-serif;
-    font-size: 12px;
-    color: #111111;
+    background: linear-gradient(180deg, #dbe4ef 0%, #cdd8e6 100%);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Tahoma, Verdana, Arial, sans-serif;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #111827;
     margin: 0;
-    padding: 8px 0 30px;
+    padding: 14px 10px 36px;
+    -webkit-font-smoothing: antialiased;
 }
 
 .wap-wrapper {
-    max-width: 680px;
+    width: 100%;
+    max-width: 820px;
     margin: 0 auto;
     background-color: #ffffff;
     border: 2px solid #003366;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0, 38, 77, 0.18);
 }
 
 /* Header & Logo Ala Waptrick */
 .wap-header {
-    background: linear-gradient(180deg, #0055aa 0%, #003366 100%);
+    background: linear-gradient(180deg, #005bb5 0%, #003366 100%);
     color: #ffffff;
-    padding: 8px 10px;
+    padding: 12px 14px;
     border-bottom: 3px solid #ff6600;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .wap-logo {
-    font-size: 16px;
-    font-weight: bold;
-    letter-spacing: 0.5px;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
     color: #ffffff;
     text-decoration: none;
+    display: inline-block;
 }
 
 .wap-logo span {
@@ -37,28 +49,30 @@ body {
 }
 
 .wap-subtitle {
-    font-size: 10px;
-    color: #cce0ff;
+    font-size: 11px;
+    color: #d6e6ff;
 }
 
-/* Navigasi Strip */
+/* Navigasi Strip Responsif */
 .wap-nav {
     background-color: #eef3f8;
     border-bottom: 1px solid #99b3cc;
-    padding: 4px 6px;
+    padding: 6px 8px;
     display: flex;
     flex-wrap: wrap;
-    gap: 4px;
+    gap: 5px;
 }
 
 .wap-nav a {
-    font-size: 11px;
-    font-weight: bold;
+    font-size: 11.5px;
+    font-weight: 700;
     color: #003366;
     text-decoration: none;
     background: #ffffff;
     border: 1px solid #88aadd;
-    padding: 2px 6px;
+    border-radius: 4px;
+    padding: 4px 9px;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
 }
 
 .wap-nav a.active,
@@ -72,9 +86,9 @@ body {
 .wap-bar-blue {
     background: linear-gradient(180deg, #1a66b3 0%, #004080 100%);
     color: #ffffff;
-    font-weight: bold;
-    font-size: 12px;
-    padding: 5px 8px;
+    font-weight: 700;
+    font-size: 12.5px;
+    padding: 7px 10px;
     border-top: 1px solid #00264d;
     border-bottom: 1px solid #00264d;
 }
@@ -82,17 +96,17 @@ body {
 .wap-bar-orange {
     background: linear-gradient(180deg, #ff8533 0%, #e65c00 100%);
     color: #ffffff;
-    font-weight: bold;
-    font-size: 12px;
-    padding: 5px 8px;
+    font-weight: 700;
+    font-size: 12.5px;
+    padding: 7px 10px;
 }
 
 .wap-bar-green {
     background: linear-gradient(180deg, #2eb82e 0%, #1f7a1f 100%);
     color: #ffffff;
-    font-weight: bold;
-    font-size: 12px;
-    padding: 5px 8px;
+    font-weight: 700;
+    font-size: 12.5px;
+    padding: 7px 10px;
 }
 
 /* List Menu Vertikal Khas Waptrick */
@@ -104,19 +118,25 @@ body {
 
 .wap-list li {
     border-bottom: 1px solid #dce4ec;
-    padding: 6px 8px;
+    padding: 9px 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 10px;
+    transition: background-color 0.15s ease;
 }
 
 .wap-list li:nth-child(even) {
     background-color: #f7f9fc;
 }
 
+.wap-list li:hover {
+    background-color: #eef5ff;
+}
+
 .wap-list li a {
     color: #004499;
-    font-weight: bold;
+    font-weight: 700;
     text-decoration: none;
 }
 
@@ -125,17 +145,17 @@ body {
     text-decoration: underline;
 }
 
-/* Box Statistik Ringkas */
+/* Box Statistik Ringkas Responsif */
 .wap-stat-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     border-bottom: 1px solid #99b3cc;
     background: #f9fbfd;
     text-align: center;
 }
 
 .wap-stat-box {
-    padding: 6px 2px;
+    padding: 9px 4px;
     border-right: 1px solid #dce4ec;
 }
 
@@ -144,25 +164,27 @@ body {
 }
 
 .wap-stat-num {
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 16px;
+    font-weight: 800;
     display: block;
+    line-height: 1.2;
 }
 
 .wap-stat-lbl {
-    font-size: 10px;
-    color: #555555;
+    font-size: 10.5px;
+    color: #4b5563;
 }
 
-/* Tombol & Form Retro */
+/* Tombol & Form Retro-Modern */
 .btn-wap {
     background: linear-gradient(180deg, #ff8533 0%, #e65c00 100%);
     color: #ffffff;
     border: 1px solid #b34700;
-    font-size: 11px;
-    font-weight: bold;
-    padding: 4px 10px;
-    border-radius: 2px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: filter 0.15s ease, transform 0.1s ease;
 }
 
 .btn-wap:hover {
@@ -174,27 +196,55 @@ body {
     background: linear-gradient(180deg, #1a66b3 0%, #004080 100%);
     color: #ffffff;
     border: 1px solid #00264d;
-    font-size: 11px;
-    font-weight: bold;
-    padding: 4px 10px;
-    border-radius: 2px;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 4px;
+    transition: filter 0.15s ease;
+}
+
+.btn-wap-blue:hover {
+    background: #003366;
+    color: #ffffff;
 }
 
 .form-control,
 .form-select {
-    font-size: 11px;
-    border-radius: 2px;
+    font-size: 12px;
+    border-radius: 4px;
     border: 1px solid #7f9db9;
-    padding: 4px 6px;
+    padding: 6px 8px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #0055aa;
+    box-shadow: 0 0 0 2px rgba(0, 85, 170, 0.18);
+}
+
+/* Tabel, Chart, & DataTables Responsif */
+.table {
+    width: 100% !important;
+    word-break: break-word;
+}
+
+.dataTables_wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+canvas {
+    max-width: 100% !important;
 }
 
 /* Badge Platform & Sentimen */
 .badge-wap {
     font-size: 10px;
-    padding: 2px 5px;
-    border-radius: 2px;
-    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 700;
     display: inline-block;
+    text-transform: uppercase;
 }
 
 .badge-youtube {
@@ -222,17 +272,67 @@ body {
     color: #fff;
 }
 
+.badge-threads {
+    background-color: #101010;
+    color: #fff;
+}
+
+.badge-text {
+    background-color: #4b5563;
+    color: #fff;
+}
+
 /* Footer Waptrick */
 .wap-footer {
     background-color: #003366;
     color: #ffffff;
     text-align: center;
-    font-size: 10px;
-    padding: 6px;
+    font-size: 11px;
+    padding: 9px 8px;
     border-top: 2px solid #ff6600;
 }
 
-.badge-threads {
-    background-color: #101010;
-    color: #fff;
+/* Breakpoint Tablet & Mobile */
+@media (max-width: 600px) {
+    body {
+        padding: 0 0 20px;
+    }
+
+    .wap-wrapper {
+        border-left: none;
+        border-right: none;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .wap-header {
+        padding: 10px;
+    }
+
+    .wap-logo {
+        font-size: 16px;
+    }
+
+    .wap-nav a {
+        flex: 1 1 auto;
+        text-align: center;
+        font-size: 11px;
+        padding: 5px 6px;
+    }
+
+    .wap-stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .wap-stat-box {
+        border-bottom: 1px solid #dce4ec;
+    }
+
+    .wap-stat-box:nth-child(2n) {
+        border-right: none;
+    }
+
+    .wap-stat-box:nth-last-child(-n+2) {
+        border-bottom: none;
+    }
 }

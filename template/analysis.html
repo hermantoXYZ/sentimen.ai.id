@@ -63,6 +63,82 @@
     {% endif %}
 </div>
 
+<div class="wap-bar-green"><i class="fas fa-chart-line me-1"></i> Evaluasi Model — Precision, Recall, F1-Score &amp; Akurasi</div>
+<div class="p-2 border-bottom">
+  {% if metrics %}
+  <div class="d-flex justify-content-between align-items-center mb-2 flex-wrap gap-1">
+    <div class="small text-muted" style="font-size:10.5px;">
+      <i class="fas fa-info-circle me-1 text-primary"></i>
+      Berbasis <strong>self-confidence</strong> model (threshold ≥60%).
+      Bukan evaluasi ground-truth eksternal.
+    </div>
+    <div>
+      <span class="badge bg-primary" style="font-size:11px;">
+        Akurasi: {{ metrics.accuracy }}%
+      </span>
+      <span class="badge bg-secondary ms-1" style="font-size:11px;">
+        N = {{ metrics.total }} data
+      </span>
+    </div>
+  </div>
+  <table class="table table-sm table-bordered mb-1" style="font-size:11px;">
+    <thead class="table-dark text-center">
+      <tr>
+        <th>Kelas</th>
+        <th title="Dari semua diprediksi kelas ini, berapa yang benar?">Precision (%)</th>
+        <th title="Dari semua data kelas ini, berapa yang berhasil diprediksi?">Recall (%)</th>
+        <th title="Harmonic mean Precision × Recall">F1-Score (%)</th>
+        <th>Support</th>
+      </tr>
+    </thead>
+    <tbody class="text-center">
+      {% for cls, m in metrics.per_class.items() %}
+      <tr>
+        <td class="text-start">
+          <span class="badge bg-{{ 'success' if cls=='positive' else ('danger' if cls=='negative' else 'warning text-dark') }}">
+            {{ cls }}
+          </span>
+        </td>
+        <td>
+          <div class="progress" style="height:8px;" title="{{ m.precision }}%">
+            <div class="progress-bar bg-{{ 'success' if cls=='positive' else ('danger' if cls=='negative' else 'warning') }}"
+                 style="width:{{ m.precision }}%"></div>
+          </div>
+          <span>{{ m.precision }}</span>
+        </td>
+        <td>
+          <div class="progress" style="height:8px;" title="{{ m.recall }}%">
+            <div class="progress-bar bg-info"
+                 style="width:{{ m.recall }}%"></div>
+          </div>
+          <span>{{ m.recall }}</span>
+        </td>
+        <td><strong>{{ m.f1 }}</strong></td>
+        <td>{{ m.support }}</td>
+      </tr>
+      {% endfor %}
+      <tr class="table-secondary fw-bold text-center">
+        <td class="text-start"><em>Macro Avg</em></td>
+        <td>{{ metrics.macro.precision }}</td>
+        <td>{{ metrics.macro.recall }}</td>
+        <td>{{ metrics.macro.f1 }}</td>
+        <td>{{ metrics.total }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="text-muted" style="font-size:10px; line-height:1.4;">
+    <strong>Precision</strong> = TP/(TP+FP) &nbsp;|&nbsp;
+    <strong>Recall</strong> = TP/(TP+FN) &nbsp;|&nbsp;
+    <strong>F1</strong> = 2·P·R/(P+R) &nbsp;|&nbsp;
+    <strong>Accuracy</strong> = (Conf≥60%) / N
+  </div>
+  {% else %}
+  <div class="text-muted small text-center py-2">
+    <i class="fas fa-database me-1"></i> Belum ada data untuk dievaluasi.
+  </div>
+  {% endif %}
+</div>
+
 <div class="wap-bar-orange"><i class="fas fa-trophy me-1"></i> Top Engaging Posts</div>
 <div class="p-2">
     <table id="topPostsTable" class="table table-sm table-bordered mb-0" style="font-size: 11px;">

@@ -22,7 +22,12 @@
             </a>
             <div class="wap-subtitle">Mobile Social Media &amp; Sentiment Portal</div>
         </div>
-        <span class="badge bg-warning text-dark" style="font-size: 10px;">WAP 2.0</span>
+        <div class="d-flex align-items-center gap-2">
+            <a href="{{ url_for('panduan') }}" class="btn btn-sm btn-outline-light py-0 px-2" style="font-size: 10.5px; font-weight: 700;">
+                <i class="fas fa-book-open me-1"></i>Panduan
+            </a>
+            <span class="badge bg-warning text-dark" style="font-size: 10px;">WAP 2.0</span>
+        </div>
     </div>
 
     <!-- Menu Navigasi Horizontal Ringkas -->
@@ -34,6 +39,7 @@
         <a class="{% if request.endpoint=='threads_analyzer' %}active{% endif %}" href="{{ url_for('threads_analyzer') }}">[Threads]</a>
         <a class="{% if request.endpoint=='tiktok_analyzer' %}active{% endif %}" href="{{ url_for('tiktok_analyzer') }}">[TikTok]</a>
         <a class="{% if request.endpoint=='twitter_analyzer' %}active{% endif %}" href="{{ url_for('twitter_analyzer') }}">[Twitter]</a>
+        <a class="{% if request.endpoint=='instagram_analyzer' %}active{% endif %}" href="{{ url_for('instagram_analyzer') }}">[IG]</a>
         <a class="{% if request.endpoint=='live_monitor' %}active{% endif %}" href="{{ url_for('live_monitor') }}">[Live!]</a>
     </div>
 
@@ -66,5 +72,16 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<!-- MathJax untuk rendering formula LaTeX (panduan.html) -->
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']],
+      displayMath: [['$$', '$$'], ['\\[', '\\]']]
+    },
+    options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+  };
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.min.js" id="MathJax-script" async></script>
 </body>
 </html>
