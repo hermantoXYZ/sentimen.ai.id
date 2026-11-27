@@ -1,23 +1,31 @@
 {% extends "base.html" %}
-{% block title %}Panduan Penggunaan - Sentimen.ai.id{% endblock %}
+{% block title %}Panduan Penggunaan — Sentimen.ai.id{% endblock %}
 {% block content %}
 <div class="wap-bar-orange">
     <i class="fas fa-book-open me-1"></i> Panduan Penggunaan Sentimen.ai.id
 </div>
 
 <div class="p-2 border-bottom bg-light" style="font-size: 11.5px;">
-    <strong>Sentimen.ai.id</strong> adalah portal monitoring dan analisis sentimen teks maupun media sosial berbasis Flask &amp; NLP.
-    Semua hasil analisis otomatis tersimpan ke database lokal (<code>instance/social_monitor.db</code>) dan langsung memperbarui grafik serta statistik di seluruh halaman.
+    <strong>Sentimen.ai.id</strong> adalah platform analisis sentimen berbasis NLP yang berfokus pada
+    <strong>ekosistem ekonomi digital Indonesia</strong> — mencakup ulasan produk UMKM, komentar pelanggan di media sosial,
+    percakapan pasar digital, serta opini publik terhadap bisnis online. Semua hasil analisis tersimpan otomatis ke
+    database lokal (<code>instance/social_monitor.db</code>) dan langsung memperbarui grafik serta statistik di seluruh halaman.
 </div>
 
 <!-- 1. Alur Kerja -->
-<div class="wap-bar-blue"><i class="fas fa-sitemap me-1"></i> 1. Alur Kerja Umum</div>
+<div class="wap-bar-blue"><i class="fas fa-sitemap me-1"></i> 1. Alur Kerja — Analisis Sentimen Bisnis Digital</div>
 <div class="p-2 border-bottom" style="font-size: 11.5px;">
     <ol class="mb-0 ps-3">
-        <li><strong>Masukkan Data</strong> melalui <em>Quick Text Analyzer</em> di Home, <em>Upload CSV</em>, atau salah satu analyzer media sosial (<em>YouTube, Threads, TikTok, Twitter/X, Instagram</em>).</li>
-        <li><strong>Pilih Model NLP</strong> yang ingin digunakan untuk mengklasifikasikan sentimen menjadi <code>positive</code>, <code>negative</code>, atau <code>neutral</code> beserta skor <em>confidence (%)</em>.</li>
-        <li><strong>Lihat Visualisasi &amp; Tren</strong> di menu <strong>[Analysis]</strong> (Donut Chart, Tren 7 Hari, WordCloud, dan Top Engaging Posts) atau pantau di <strong>[Live!]</strong>.</li>
+        <li><strong>Masukkan Data</strong> melalui <em>Analisis Teks Cepat</em> di Home, <em>Upload CSV</em> (data ulasan/komentar pelanggan), atau salah satu analyzer media sosial (<em>YouTube, Threads, TikTok, Twitter/X, Instagram</em>).</li>
+        <li><strong>Pilih Model NLP</strong> yang sesuai untuk mengklasifikasikan sentimen menjadi <code>positive</code>, <code>negative</code>, atau <code>neutral</code> beserta skor <em>confidence (%)</em>.</li>
+        <li><strong>Lihat Visualisasi &amp; Insight</strong> di menu <strong>[Analysis]</strong> — distribusi sentimen, tren 7 hari, WordCloud kata kunci bisnis, evaluasi model (Precision/Recall/F1), serta tabel <em>Top Engaging Posts</em> — atau pantau secara realtime di <strong>[Live!]</strong>.</li>
     </ol>
+    <div class="mt-2 p-2 bg-warning bg-opacity-10 border border-warning rounded" style="font-size:10.5px;">
+        <i class="fas fa-lightbulb me-1 text-warning"></i>
+        <strong>Contoh penggunaan:</strong> UMKM dapat menganalisis ratusan ulasan Tokopedia/Shopee yang diekspor ke CSV,
+        pemilik brand dapat memantau sentimen komentar TikTok Shop, atau analis dapat membandingkan persepsi publik terhadap
+        produk lokal vs impor dari data Twitter/X.
+    </div>
 </div>
 
 <!-- 2. Pilihan Model NLP -->
@@ -111,9 +119,9 @@
     <div class="mb-2 pb-2 border-bottom">
         <strong>A. Home / Dashboard (<code>/</code>)</strong>
         <ul class="mb-0 ps-3 mt-1">
-            <li><strong>Brand Sentiment Summary:</strong> Menampilkan skor sentimen keseluruhan (<code>0–100%</code>) serta jumlah post Total, Positive, Negative, dan Neutral.</li>
-            <li><strong>Quick Text Sentiment Analyzer:</strong> Ketik langsung komentar atau kalimat uji, pilih model NLP, lalu klik <em>Analyze &amp; Add Text</em>.</li>
-            <li><strong>Reset Data:</strong> Klik tombol <em>Reset Data</em> di bar <em>Latest Analyzed Posts</em> jika ingin menghapus seluruh data analisis lama dan memulai dari awal.</li>
+            <li><strong>Indeks Sentimen Bisnis Digital:</strong> Menampilkan skor sentimen keseluruhan (<code>0–100%</code>) serta jumlah post Total, Positive, Negative, dan Neutral dari seluruh data yang dianalisis.</li>
+            <li><strong>Analisis Teks Cepat:</strong> Langsung ketik ulasan produk, komentar pelanggan, atau opini terkait UMKM/bisnis, pilih model NLP, lalu klik <em>Analisis &amp; Simpan</em>.</li>
+            <li><strong>Reset Data:</strong> Klik tombol <em>Reset Data</em> di bar <em>Riwayat Analisis Terbaru</em> untuk menghapus seluruh data lama dan memulai dari awal.</li>
         </ul>
     </div>
 
@@ -122,41 +130,43 @@
         <ul class="mb-0 ps-3 mt-1">
             <li>Kolom wajib pada file CSV: <code>platform, username, text</code>.</li>
             <li>Kolom opsional: <code>created_at, likes, shares</code>. Ukuran maksimal file <strong>16 MB</strong>.</li>
+            <li>Contoh penggunaan: ekspor ulasan Tokopedia/Shopee ke CSV, lalu upload untuk analisis sentimen massal.</li>
             <li>Gunakan tombol <strong>Sample CSV</strong> untuk mengunduh contoh format CSV yang benar.</li>
         </ul>
     </div>
 
     <div class="mb-2 pb-2 border-bottom">
-        <strong>C. Analysis &amp; WordCloud (<code>/analyze</code>)</strong>
+        <strong>C. Visualisasi Sentimen &amp; Tren (<code>/analyze</code>)</strong>
         <ul class="mb-0 ps-3 mt-1">
             <li>Filter berdasarkan platform melalui dropdown di kanan atas (<em>All Platforms</em> atau per platform).</li>
-            <li>Menampilkan grafik <em>Sentiment Distribution</em>, <em>Platform Share</em>, <em>7-Day Sentiment Trend</em>, <strong>WordCloud (Top Keywords)</strong>, serta tabel <strong>Top Engaging Posts</strong> (hingga 50 post terbaru/engagement tertinggi).</li>
+            <li>Menampilkan grafik <em>Sentiment Distribution</em>, <em>Platform Share</em>, <em>7-Day Trend</em>, <strong>WordCloud Kata Kunci Bisnis</strong>, tabel <strong>Evaluasi Model (Precision/Recall/F1)</strong>, serta <strong>Top Engaging Posts</strong>.</li>
+            <li><strong>Precision/Recall/F1-Score:</strong> Metrik evaluasi model berbasis self-confidence (threshold ≥60%) — menggambarkan seberapa yakin model terhadap klasifikasi sentimen data bisnis Anda.</li>
         </ul>
     </div>
 
     <div class="mb-2 pb-2 border-bottom">
         <strong>D. YouTube Analyzer (<code>/youtube-analyzer</code>)</strong>
         <ul class="mb-0 ps-3 mt-1">
-            <li><strong>URL Video:</strong> Tempelkan URL seperti <code>https://www.youtube.com/watch?v=...</code>, <code>youtu.be/...</code>, atau <code>/shorts/...</code> untuk mengambil dan menganalisis sentimen komentar video.</li>
-            <li><strong>Channel / Handle:</strong> Masukkan <code>@handle</code> (mis. <code>@MrBeast</code>) atau Channel ID (<code>UC...</code>) untuk menganalisis daftar video channel.</li>
+            <li><strong>URL Video Review:</strong> Tempel URL video review produk UMKM, unboxing, atau tutorial bisnis untuk menganalisis sentimen komentar.</li>
+            <li><strong>Channel Bisnis:</strong> Masukkan <code>@handle</code> atau Channel ID (<code>UC...</code>) untuk memetakan sentimen seluruh video channel.</li>
         </ul>
     </div>
 
     <div class="mb-2 pb-2 border-bottom">
         <strong>E. Threads, TikTok, Twitter/X, &amp; Instagram Analyzer</strong>
         <ul class="mb-0 ps-3 mt-1">
-            <li><strong>Threads (<code>/threads-analyzer</code>):</strong> Masukkan URL post/profil <code>threads.net</code> / <code>threads.com</code> atau <code>@username</code>.</li>
-            <li><strong>TikTok (<code>/tiktok-analyzer</code>):</strong> Masukkan URL video (<code>tiktok.com/@user/video/...</code>, <code>vt.tiktok.com/...</code>) atau <code>@username</code>.</li>
-            <li><strong>Twitter/X (<code>/twitter-analyzer</code>):</strong> Masukkan URL tweet (<code>x.com/user/status/...</code>) atau <code>@username</code>.</li>
-            <li><strong>Instagram (<code>/instagram-analyzer</code>):</strong> Masukkan URL post/reel (<code>instagram.com/p/...</code>) atau <code>@username</code>. Jika akses publik Instagram dibatasi login, gunakan form <strong>Paste Komentar / Caption IG</strong> (1 baris = 1 item, opsional format <code>username: isi komentar</code>).</li>
+            <li><strong>Threads (<code>/threads-analyzer</code>):</strong> Analisis percakapan bisnis &amp; opini konsumen dari URL post/profil <code>threads.net</code>.</li>
+            <li><strong>TikTok (<code>/tiktok-analyzer</code>):</strong> Analisis komentar &amp; caption video promosi produk TikTok Shop dari URL video atau <code>@username</code>.</li>
+            <li><strong>Twitter/X (<code>/twitter-analyzer</code>):</strong> Pantau buzz &amp; sentimen publik terkait brand/produk dari URL tweet atau <code>@username</code>.</li>
+            <li><strong>Instagram (<code>/instagram-analyzer</code>):</strong> Analisis caption &amp; komentar postingan promosi bisnis. Jika akses publik dibatasi login, gunakan form <strong>Paste Komentar / Caption IG</strong>.</li>
         </ul>
     </div>
 
     <div>
         <strong>F. Live Monitor (<code>/live-monitor</code>)</strong>
         <ul class="mb-0 ps-3 mt-1">
-            <li>Memantau 15 data terbaru secara otomatis setiap <strong>5 detik</strong> melalui <code>/api/live-feed</code>.</li>
-            <li>Menampilkan <em>Live Gauge Chart</em> serta peringatan otomatis apabila rasio sentimen negatif melebihi <strong>25%</strong>.</li>
+            <li>Memantau 15 data terbaru secara otomatis setiap <strong>5 detik</strong> via <code>/api/live-feed</code>.</li>
+            <li>Menampilkan <em>Live Gauge Chart</em> serta peringatan otomatis apabila rasio sentimen negatif melebihi <strong>25%</strong> — berguna untuk crisis monitoring brand bisnis.</li>
         </ul>
     </div>
 </div>
@@ -164,11 +174,15 @@
 <!-- 4. Konfigurasi API Opsional -->
 <div class="wap-bar-green"><i class="fas fa-key me-1"></i> 4. Konfigurasi API Opsional (File <code>.env</code>)</div>
 <div class="p-2" style="font-size: 11px;">
-    <p class="mb-1">Aplikasi dapat berjalan tanpa API key untuk mode publik/input manual. Untuk hasil lebih lengkap pada masing-masing platform, Anda dapat menambahkan token berikut di file <code>.env</code> lalu me-restart server:</p>
+    <p class="mb-1">Aplikasi dapat berjalan tanpa API key untuk mode publik/input manual. Untuk hasil lebih lengkap pada masing-masing platform (berguna untuk riset pasar UMKM secara mendalam), tambahkan token berikut di file <code>.env</code> lalu restart server:</p>
     <pre class="bg-light border rounded p-2 mb-2" style="font-size: 10.5px;">YOUTUBE_API_KEY=isi_api_key_youtube
 THREADS_ACCESS_TOKEN=isi_token_threads
 TWITTER_BEARER_TOKEN=isi_bearer_token_x
 INSTAGRAM_ACCESS_TOKEN=isi_token_instagram</pre>
+    <div class="p-2 bg-info bg-opacity-10 border border-info rounded mb-2" style="font-size:10.5px;">
+        <i class="fas fa-info-circle me-1 text-info"></i>
+        <strong>Tips untuk UMKM:</strong> Gunakan <strong>Upload CSV</strong> untuk analisis massal tanpa API key — ekspor ulasan dari marketplace (Tokopedia, Shopee, Lazada) ke format CSV, lalu upload langsung ke sistem.
+    </div>
     <a href="{{ url_for('dashboard') }}" class="btn btn-wap btn-sm">&laquo; Kembali ke Home</a>
 </div>
 

@@ -167,9 +167,11 @@ def upload():
 def download_sample_csv():
     sample = (
         "platform,username,text,created_at,likes,shares\n"
-        "twitter,@user1,Produk ini sangat bagus dan berkualitas tinggi!,2026-11-20 10:30:00,150,45\n"
-        "instagram,@user2,Pelayanan sangat buruk sangat kecewa,2026-11-21 11:15:00,23,5\n"
-        "tiktok,@user3,Pengalaman unboxing biasa saja,2026-11-22 12:00:00,890,120\n"
+        "tokopedia,@buyer_rina,Produk UMKM lokal ini kualitasnya luar biasa bagus dan packaging rapi!,2026-11-20 10:30:00,320,78\n"
+        "shopee,@konsumen_budi,Penipu! Barang tidak sampai uang sudah ditransfer. Sangat kecewa.,2026-11-21 11:15:00,5,2\n"
+        "tiktok,@reviewer_ani,Review produk skincare UMKM Indonesia — biasa saja belum terlalu terasa manfaatnya,2026-11-22 12:00:00,890,120\n"
+        "instagram,@pelanggan_doni,Seller sangat responsif pengiriman cepat recommended banget buat belanja produk lokal,2026-11-23 09:00:00,210,45\n"
+        "twitter,@umkm_watcher,Digitalisasi UMKM Indonesia terus tumbuh pesat omzet meningkat signifikan,2026-11-24 14:00:00,150,60\n"
     )
     return send_file(
         io.BytesIO(sample.encode('utf-8')),

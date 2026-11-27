@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="wap-bar-orange">
-    <i class="fas fa-chart-pie me-1"></i> Brand Sentiment Summary (Score: {{ sentiment_score }}%)
+    <i class="fas fa-chart-pie me-1"></i> Indeks Sentimen Bisnis Digital (Skor: {{ sentiment_score }}%)
 </div>
 
 <!-- Grid Angka Statistik -->
@@ -24,92 +24,93 @@
     </div>
 </div>
 
-<!-- Quick Text Sentiment Input -->
+<!-- Quick Text Input -->
 <div class="wap-bar-blue">
-    <i class="fas fa-keyboard me-1"></i> Quick Text Sentiment Analyzer
+    <i class="fas fa-keyboard me-1"></i> Analisis Teks Cepat — Ulasan / Komentar Bisnis
 </div>
 <div class="p-2 border-bottom">
     <form method="POST" action="{{ url_for('analyze_text') }}">
         <div class="mb-2">
-            <textarea name="text" rows="2" class="form-control form-control-sm" placeholder="Ketik komentar atau teks untuk dianalisis sentimennya..." required></textarea>
+            <textarea name="text" rows="2" class="form-control form-control-sm"
+                placeholder="Masukkan ulasan produk, komentar pelanggan, atau opini terkait UMKM / bisnis digital..." required></textarea>
         </div>
         <div class="mb-2">
             <select name="engine" class="form-select form-select-sm">
-                <option value="textblob">NLTK / TextBlob</option>
-                <option value="sklearn">scikit-learn</option>
-                <option value="bert">Transformers (BERT)</option>
+                <option value="textblob">NLTK / TextBlob — Analisis Leksikon Cepat</option>
+                <option value="sklearn">scikit-learn — Naive Bayes (ML)</option>
+                <option value="bert">Transformers / IndoBERT — Deep Learning</option>
             </select>
         </div>
-        <button type="submit" class="btn btn-wap w-100">&raquo; Analyze &amp; Add Text</button>
+        <button type="submit" class="btn btn-wap w-100">&raquo; Analisis &amp; Simpan</button>
     </form>
 </div>
 
-<!-- Direktori Menu Ala Waptrick -->
+<!-- Direktori Menu -->
 <div class="wap-bar-blue">
-    <i class="fas fa-folder-open me-1"></i> Main Categories &amp; Tools
+    <i class="fas fa-folder-open me-1"></i> Alat Analisis &amp; Sumber Data
 </div>
 <ul class="wap-list">
     <li>
         <div>
             <i class="fas fa-file-csv text-primary me-1"></i>
-            <a href="{{ url_for('upload') }}">Upload Dataset CSV</a>
-            <div class="text-muted" style="font-size: 10px;">Batch sentiment analysis (TextBlob, Sklearn, BERT)</div>
+            <a href="{{ url_for('upload') }}">Upload Dataset CSV Bisnis</a>
+            <div class="text-muted" style="font-size: 10px;">Import data ulasan/komentar produk massal (TextBlob, Sklearn, BERT)</div>
         </div>
         <span class="badge bg-warning text-dark">HOT</span>
     </li>
     <li>
         <div>
             <i class="fas fa-chart-line text-success me-1"></i>
-            <a href="{{ url_for('analysis') }}">Sentiment &amp; Trend Charts</a>
-            <div class="text-muted" style="font-size: 10px;">Donut distribution, 7-day trend &amp; top posts</div>
+            <a href="{{ url_for('analysis') }}">Visualisasi Sentimen &amp; Tren</a>
+            <div class="text-muted" style="font-size: 10px;">Distribusi sentimen, tren 7 hari, WordCloud kata kunci bisnis</div>
         </div>
         <span class="text-muted">&raquo;</span>
     </li>
     <li>
         <div>
             <i class="fab fa-youtube text-danger me-1"></i>
-            <a href="{{ url_for('youtube_analyzer') }}">YouTube Comment Analyzer</a>
-            <div class="text-muted" style="font-size: 10px;">Analyze YouTube video comments &amp; channel sentiment</div>
+            <a href="{{ url_for('youtube_analyzer') }}">YouTube — Ulasan Produk &amp; Bisnis</a>
+            <div class="text-muted" style="font-size: 10px;">Analisis komentar video review produk, UMKM, atau channel bisnis</div>
         </div>
         <span class="badge bg-danger">NEW</span>
     </li>
     <li>
         <div>
             <i class="fas fa-at text-dark me-1"></i>
-            <a href="{{ url_for('threads_analyzer') }}">Threads Post &amp; Reply Analyzer</a>
-            <div class="text-muted" style="font-size: 10px;">Analyze Threads post/profile URL sentiment</div>
+            <a href="{{ url_for('threads_analyzer') }}">Threads — Opini Pasar &amp; Brand</a>
+            <div class="text-muted" style="font-size: 10px;">Analisis percakapan bisnis &amp; opini konsumen di Threads</div>
         </div>
         <span class="badge bg-dark">NEW</span>
     </li>
     <li>
         <div>
             <i class="fab fa-tiktok text-dark me-1"></i>
-            <a href="{{ url_for('tiktok_analyzer') }}">TikTok Comment &amp; Video Analyzer</a>
-            <div class="text-muted" style="font-size: 10px;">Analyze TikTok video comments &amp; captions</div>
+            <a href="{{ url_for('tiktok_analyzer') }}">TikTok — Sentimen Konten UMKM</a>
+            <div class="text-muted" style="font-size: 10px;">Analisis komentar &amp; caption video promosi produk TikTok Shop</div>
         </div>
         <span class="badge bg-dark">NEW</span>
     </li>
     <li>
         <div>
             <i class="fab fa-twitter text-info me-1"></i>
-            <a href="{{ url_for('twitter_analyzer') }}">Twitter / X Sentiment Analyzer</a>
-            <div class="text-muted" style="font-size: 10px;">Analyze tweet &amp; timeline sentiment</div>
+            <a href="{{ url_for('twitter_analyzer') }}">Twitter/X — Buzz &amp; Opini Ekonomi</a>
+            <div class="text-muted" style="font-size: 10px;">Pantau percakapan &amp; sentimen publik terkait brand/produk di X</div>
         </div>
         <span class="badge bg-info text-dark">NEW</span>
     </li>
     <li>
         <div>
             <i class="fab fa-instagram me-1" style="color:#c13584;"></i>
-            <a href="{{ url_for('instagram_analyzer') }}">Instagram Post &amp; Profile Analyzer</a>
-            <div class="text-muted" style="font-size: 10px;">Analyze Instagram captions &amp; profile posts</div>
+            <a href="{{ url_for('instagram_analyzer') }}">Instagram — Sentimen Produk &amp; Brand</a>
+            <div class="text-muted" style="font-size: 10px;">Analisis caption &amp; komentar postingan promosi bisnis di Instagram</div>
         </div>
         <span class="badge text-white" style="background-color:#c13584;">NEW</span>
     </li>
     <li>
         <div>
             <i class="fas fa-satellite-dish text-info me-1"></i>
-            <a href="{{ url_for('live_monitor') }}">Real-Time Live Monitor</a>
-            <div class="text-muted" style="font-size: 10px;">Live sentiment stream &amp; negative spike alerts</div>
+            <a href="{{ url_for('live_monitor') }}">Live Monitor — Pantau Realtime</a>
+            <div class="text-muted" style="font-size: 10px;">Aliran sentimen langsung &amp; alert lonjakan opini negatif bisnis</div>
         </div>
         <span class="badge bg-success">LIVE</span>
     </li>
@@ -117,7 +118,7 @@
 
 <!-- Platform Counter -->
 <div class="wap-bar-blue">
-    <i class="fas fa-globe me-1"></i> Platform Index
+    <i class="fas fa-globe me-1"></i> Indeks Platform Digital
 </div>
 <div class="wap-stat-grid">
     <div class="wap-stat-box">
@@ -158,7 +159,7 @@
 
 <!-- Recent Activity -->
 <div class="wap-bar-green d-flex justify-content-between align-items-center">
-    <span><i class="fas fa-list me-1"></i> Latest Analyzed Posts</span>
+    <span><i class="fas fa-list me-1"></i> Riwayat Analisis Terbaru</span>
     <form method="POST" action="{{ url_for('clear_data') }}" onsubmit="return confirm('Hapus semua data analisis lama?');">
         <button type="submit" class="btn btn-sm btn-light text-danger py-0 px-2" style="font-size: 10px;">Reset Data</button>
     </form>

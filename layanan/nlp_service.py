@@ -6,11 +6,20 @@ from textblob import TextBlob
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.naive_bayes import MultinomialNB
 
+import os
+
 for res in ['punkt', 'stopwords']:
     try:
         nltk.data.find(f'corpora/{res}' if res == 'stopwords' else f'tokenizers/{res}')
     except LookupError:
-        nltk.download(res, quiet=True)
+        # Di Vercel, download ke /tmp agar bisa ditulis
+        dl_dir = '/tmp/nltk_data' if os.environ.get('VERCEL') == '1' else None
+        try:
+            nltk.download(res, quiet=True, download_dir=dl_dir)
+            if dl_dir:
+                nltk.data.path.insert(0, dl_dir)
+        except Exception:
+            pass
 
 try:
     _EN_STOPWORDS = set(stopwords.words('english'))
@@ -36,22 +45,45 @@ def clean_text(text: str) -> str:
 
 
 POS_ID = {
-    'bagus', 'berkualitas', 'tinggi', 'mantap', 'keren', 'win', 'cepat', 'puas',
-    'terbaik', 'hebat', 'membantu', 'suka', 'cinta', 'senang', 'gembira', 'bahagia',
-    'nyaman', 'aman', 'lancar', 'murah', 'promo', 'diskon', 'gratis', 'berhasil',
+    # Kualitas produk & layanan (UMKM/bisnis digital)
+    'bagus', 'berkualitas', 'tinggi', 'mantap', 'keren', 'cepat', 'puas',
+    'terbaik', 'hebat', 'membantu', 'suka', 'senang', 'nyaman', 'aman',
+    'lancar', 'murah', 'promo', 'diskon', 'gratis', 'berhasil', 'terpercaya',
     'sukses', 'juara', 'rekomendasi', 'recommended', 'ramah', 'bersih', 'rapi',
-    'sempurna', 'top', 'oke', 'sip', 'jos', 'mantul', 'luarbiasa', 'unik',
-    'menarik', 'seru', 'asik', 'asyik', 'positif', 'unggul', 'memuaskan', 'worth',
-    'good', 'great', 'best', 'awesome', 'amazing', 'happy', 'love', 'nice', 'super'
+    'sempurna', 'top', 'oke', 'sip', 'jos', 'mantul', 'unik',
+    'menarik', 'asik', 'asyik', 'positif', 'unggul', 'memuaskan', 'worth',
+    'good', 'great', 'best', 'awesome', 'amazing', 'happy', 'love', 'nice',
+    # Ekonomi digital & bisnis
+    'untung', 'profit', 'laris', 'laku', 'booming', 'viral', 'trending',
+    'terjangkau', 'hemat', 'efisien', 'produktif', 'inovatif', 'kreatif',
+    'tumbuh', 'berkembang', 'maju', 'omzet', 'pendapatan', 'investasi',
+    'menguntungkan', 'potensial', 'peluang', 'ekspansi', 'digitalisasi',
+    'mudah', 'praktis', 'cepet', 'responsif', 'profesional', 'amanah',
+    'original', 'asli', 'genuine', 'resmi', 'legal', 'terjamin',
+    # TikTok Shop / marketplace UMKM
+    'estafet', 'ongkir', 'gratis_ongkir', 'cashback', 'voucher', 'flash_sale',
+    'review_bagus', 'bintang', 'rating_tinggi', 'seller_terpercaya',
+    'pengiriman_cepat', 'packaging_bagus', 'sesuai_ekspektasi', 'recommended',
+    'repeat_order', 'langganan', 'loyal', 'worth_it', 'value', 'affordable'
 }
 
 NEG_ID = {
+    # Keluhan produk & layanan
     'buruk', 'kecewa', 'parah', 'lambat', 'rugi', 'error', 'gagal', 'jelek',
-    'sampah', 'pensiun', 'benci', 'marah', 'kesal', 'mahal', 'lemot', 'macet',
+    'sampah', 'benci', 'marah', 'kesal', 'mahal', 'lemot', 'macet',
     'rusak', 'cacat', 'palsu', 'penipu', 'bohong', 'hoax', 'susah', 'sulit',
     'ribet', 'bingung', 'bosan', 'mengecewakan', 'menyesal', 'hancur', 'kacau',
-    'negatif', 'bahaya', 'toxic', 'scam', 'terburuk', 'payah', 'kurang',
-    'terrible', 'bad', 'worst', 'hate', 'broken', 'fail', 'failed', 'slow', 'awful'
+    'negatif', 'bahaya', 'toxic', 'scam', 'terburuk', 'payah',
+    'terrible', 'bad', 'worst', 'hate', 'broken', 'fail', 'failed', 'slow', 'awful',
+    # Keluhan khas ekonomi digital / UMKM / marketplace
+    'tipu', 'ditipu', 'menipu', 'penipuan', 'modus', 'tidak_sampai', 'hilang',
+    'retur', 'komplain', 'refund_gagal', 'uang_hilang', 'barang_palsu',
+    'barang_tidak_sesuai', 'deskripsi_berbeda', 'beda_foto', 'seller_nakal',
+    'respon_lama', 'tidak_responsif', 'admin_cuek', 'olshop_abal',
+    'dropship_jelek', 'pengiriman_lama', 'ongkir_mahal', 'batal_sepihak',
+    'diblokir', 'akun_dibekukan', 'stok_habis', 'tidak_jelas',
+    'rugi_besar', 'bangkrut', 'gulung_tikar', 'merugi', 'defisit',
+    'tidak_terpercaya', 'tidak_recommended', 'tidak_amanah', 'tidak_profesional'
 }
 
 NEGATIONS = {'tidak', 'bukan', 'tak', 'gak', 'ga', 'nggak', 'enggak', 'jangan', 'kurang', 'belum', 'not', 'no', 'never'}
@@ -92,57 +124,57 @@ def _analyze_textblob(text: str) -> dict:
 
 
 _TRAINING_DATA = [
-    # Positive (Indonesian & English)
+    # ── POSITIVE: Ulasan produk & layanan UMKM / e-commerce ──────────────────
     ("produk ini sangat bagus dan berkualitas tinggi", "positive"),
     ("pelayanan sangat ramah cepat dan memuaskan", "positive"),
     ("barang sampai dengan aman packing rapi mantap", "positive"),
     ("sangat puas belanja disini recommended banget", "positive"),
     ("harga murah kualitas terbaik tidak mengecewakan", "positive"),
     ("aplikasi ini sangat membantu dan mudah digunakan", "positive"),
-    ("keren banget fiturnya lancar jaya tanpa kendala", "positive"),
-    ("video ini sangat menginspirasi dan bermanfaat sekali", "positive"),
-    ("tutorial yang sangat jelas mudah dipahami sukses selalu", "positive"),
-    ("jump over the lava win mantap keren amazing", "positive"),
-    ("i built 100 houses and gave them away best day ever", "positive"),
-    ("my honest life update super happy awesome video", "positive"),
-    ("great content love this channel so much", "positive"),
-    ("best product ever works smoothly and fast", "positive"),
-    ("senang sekali hasilnya luar biasa sempurna", "positive"),
     ("pengiriman cepat respon admin baik sekali", "positive"),
-    # Negative (Indonesian & English)
+    ("toko umkm lokal ini kualitasnya luar biasa mantul", "positive"),
+    ("usaha kecil ini berkembang pesat omzetnya naik terus", "positive"),
+    ("promo cashback voucher diskon sangat menguntungkan pembeli", "positive"),
+    ("produk lokal indonesia bagus banget worth it terpercaya", "positive"),
+    ("seller responsif amanah profesional repeat order terus", "positive"),
+    ("digitalisasi umkm ini membantu sekali pendapatan naik", "positive"),
+    ("bisnis online ini tumbuh pesat inovatif dan kreatif", "positive"),
+    ("tiktok shop umkm lokal ini laris viral trending", "positive"),
+    ("great product works fast and affordable love it", "positive"),
+    # ── NEGATIVE: Keluhan produk / marketplace / bisnis digital ──────────────
     ("pelayanan sangat buruk sangat kecewa parah", "negative"),
-    ("error gagal lambat mengecewakan sekali", "negative"),
     ("barang rusak cacat tidak sesuai deskripsi rugi", "negative"),
-    ("aplikasi lemot sering crash macet susah dipakai", "negative"),
+    ("penipu hoax palsu jangan beli dari toko ini", "negative"),
+    ("pengiriman lama ongkir mahal seller tidak responsif", "negative"),
+    ("uang sudah transfer barang tidak sampai ditipu", "negative"),
+    ("produk palsu tidak asli beda dari foto deskripsi berbeda", "negative"),
+    ("komplain tidak ditanggapi refund gagal admin cuek", "negative"),
+    ("olshop abal-abal modus penipuan jangan percaya", "negative"),
+    ("bisnis ini bangkrut merugi tidak professional sama sekali", "negative"),
+    ("aplikasi error lambat susah dipakai bikin rugi", "negative"),
     ("harga mahal kualitas sampah menyesal beli ini", "negative"),
-    ("penipu hoax palsu jangan percaya channel ini", "negative"),
-    ("respon lambat admin tidak ramah sangat buruk", "negative"),
-    ("tidak bagus sama sekali mengecewakan dan jelek", "negative"),
-    ("reviewing terrible mobile game ads worst ever", "negative"),
-    ("most dangerous trap fail and lose awful", "negative"),
-    ("terrible experience broken and slow waste of money", "negative"),
-    ("hate this update worst performance ever", "negative"),
-    ("windows 10 segera pensiun bikin ribet pengguna", "negative"),
-    ("bosen banget kontennya garing tidak menarik", "negative"),
-    ("kecewa berat barang tidak sampai uang hilang", "negative"),
-    ("kurang memuaskan hasil tidak sesuai harapan", "negative"),
-    # Neutral (Indonesian & English)
-    ("pengalaman unboxing biasa saja standar", "neutral"),
-    ("hirarki data dari bit sampai database", "neutral"),
-    ("demo aplikasi spk metode saw dengan fitur api", "neutral"),
-    ("1 minggu menuju akhir masa pakainya", "neutral"),
-    ("jadwal rilis pembaruan sistem bulan depan", "neutral"),
-    ("cara menginstall python di komputer windows", "neutral"),
-    ("daftar harga paket internet terbaru hari ini", "neutral"),
-    ("informasi cuaca untuk wilayah jakarta dan sekitarnya", "neutral"),
-    ("reading fan comments and memes this week", "neutral"),
-    ("unboxing tech gadgets from online store", "neutral"),
-    ("tried building my own pc setup again", "neutral"),
-    ("survive 100 days in bunker challenge", "neutral"),
-    ("perbandingan spesifikasi laptop untuk kerja", "neutral"),
-    ("pengumuman pemeliharaan server malam ini", "neutral"),
-    ("ringkasan berita teknologi minggu ini", "neutral"),
-    ("panduan dasar belajar pemrograman web", "neutral"),
+    ("umkm ini tidak berkembang karena pelayanan buruk kacau", "negative"),
+    ("stok habis batal sepihak tidak amanah mengecewakan", "negative"),
+    ("terrible experience broken product and slow delivery", "negative"),
+    ("scam seller worst experience hate this shop", "negative"),
+    ("respon lama admin tidak ramah sangat buruk", "negative"),
+    # ── NEUTRAL: Informasi / deskripsi / laporan ekonomi digital ─────────────
+    ("info harga paket internet terbaru untuk usaha", "neutral"),
+    ("cara mendaftar toko umkm di marketplace online", "neutral"),
+    ("panduan digitalisasi umkm langkah demi langkah", "neutral"),
+    ("laporan pertumbuhan ekonomi digital indonesia tahun ini", "neutral"),
+    ("perbandingan platform e-commerce untuk jualan online", "neutral"),
+    ("cara menginstall aplikasi kasir untuk warung", "neutral"),
+    ("daftar program bantuan pemerintah untuk umkm", "neutral"),
+    ("statistik pengguna tiktok shop dan shopee indonesia", "neutral"),
+    ("review spesifikasi laptop untuk kebutuhan kerja bisnis", "neutral"),
+    ("pengumuman update fitur baru aplikasi pembayaran digital", "neutral"),
+    ("panduan cara membuka rekening bisnis online", "neutral"),
+    ("perbandingan ongkos kirim jne jnt sicepat", "neutral"),
+    ("cara buat konten promosi produk umkm di media sosial", "neutral"),
+    ("ringkasan berita ekonomi digital minggu ini", "neutral"),
+    ("tutorial membuat website toko online gratis", "neutral"),
+    ("info program kur kredit usaha rakyat 2026", "neutral"),
 ]
 
 _SAMPLES = [t for t, _ in _TRAINING_DATA]
